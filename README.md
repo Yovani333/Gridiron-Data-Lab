@@ -45,9 +45,10 @@ La interfaz temporal utiliza **Streamlit 1.64.0**, declarado como dependencia di
 Streamlit instala dependencias transitivas (entre ellas Pandas, Arrow y su servidor
 interno); nuestro código de datos y análisis continúa usando Polars nativo y no
 implementa endpoints ni convierte los DataFrames a Pandas.
-`nflreadpy` requiere Python >=3.10; este proyecto usa Python 3.14 y fija 3.14.5
-en `.python-version`, la versión disponible y probada. No se afirma compatibilidad
-probada con otras versiones. uv puede descargar ese intérprete si falta.
+`nflreadpy` requiere Python >=3.10; este proyecto usa Python 3.14 y fija la
+serie 3.14 en `.python-version`. La versión 3.14.5 fue la probada localmente;
+el despliegue puede usar otra versión de mantenimiento 3.14 disponible.
+uv puede descargar un intérprete compatible si falta.
 
 Instalar [uv siguiendo sus instrucciones oficiales](https://docs.astral.sh/uv/getting-started/installation/)
 y ejecutar:
