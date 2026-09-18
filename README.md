@@ -58,6 +58,8 @@ semana y convenciones de temporada en enero, playoffs y cambio de año de roster
 La integración no descarga play-by-play y reutiliza la caché si está vigente.
 Resultado de la validación inicial: **31 unitarias aprobadas y 1 integración
 aprobada**; sincronización normal y `--locked`, imports y exploración exitosos.
+También se repitió todo desde un clon nuevo de GitHub, con `.venv` nueva y caché
+de uv independiente. Véase [el registro de cierre](docs/phase-1-validation.md).
 
 ## Explorar datos
 
@@ -170,11 +172,15 @@ su última temporada. Para otros datasets debe verificarse el release correspond
 la temporada actual no garantiza disponibilidad. No se descargaron todas las temporadas.
 
 Play-by-play 2024 figuraba con **20.597.560 bytes**. Se inspeccionaron función,
-parámetros e inventario, pero no se descargó ese archivo. La lectura parcial del
-footer mediante HTTP Range devolvió HTTP 501; no se autorizó el reintento.
-Por ello **el esquema PBP no se verificó directamente**. Su contrato mínimo
-`game_id`, `play_id`, `season`, `week` se basa en el diccionario upstream y se
-comprobará al cargarlo; la prueba de ese wrapper es unitaria, no integración PBP.
+parámetros e inventario y se verificó su esquema real mediante dos solicitudes
+HTTP Range con posiciones de bytes explícitas. Se transfirieron **117.854 bytes**
+del footer, sin descargar filas de juego ni la temporada completa. Los rangos
+relativos habían producido HTTP 501; los rangos explícitos funcionaron.
+El esquema contiene **372 columnas**, incluidas `game_id`, `play_id`, `season`,
+`week`, `epa`, `success` y `cpoe`, y está registrado en
+[docs/pbp-2024-schema.json](docs/pbp-2024-schema.json).
+Esto verifica nombres y tipos, no los valores ni la calidad de las filas;
+la prueba del wrapper PBP sigue siendo unitaria, no integración con carga completa.
 
 Fuentes oficiales para ampliar o actualizar la investigación:
 
