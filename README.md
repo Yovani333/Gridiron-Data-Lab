@@ -3,11 +3,11 @@ Python-based football analytics platform for collecting, validating and analyzin
 
 ## Estado actual
 
-**Fase 2 — Análisis descriptivo y comparador NFL.** La base de datos en Python de
-la fase 1 ahora permite consultar partidos, calcular forma reciente, métricas de
-equipos y play-by-play, comparar rivales y visualizar resultados en una interfaz
-temporal Streamlit. La fuente sigue siendo exclusivamente nflverse/nflreadpy.
-No hay API propia, base de datos externa, predicciones, probabilidades ni apuestas.
+**Motor experimental y análisis descriptivo NFL.** Permite consultar partidos,
+comparar equipos y evaluar un primer modelo probabilístico mediante backtesting
+cronológico. La fuente sigue siendo exclusivamente nflverse/nflreadpy. El modelo
+todavía no supera el benchmark de mejor récord y sus probabilidades no constituyen
+picks ni recomendaciones. No hay API propia, base de datos externa ni cuotas.
 
 ## Abrir la interfaz temporal
 
@@ -28,6 +28,9 @@ La interfaz corre localmente y no requiere un frontend JavaScript propio.
 - Historial de 3, 5, 10 o todos los enfrentamientos anteriores disponibles.
 - **Incluir métricas avanzadas** habilita la carga de una temporada PBP completa.
   La primera carga puede tardar; los datos quedan cacheados.
+- **Diagnóstico del modelo:** accuracy, Brier, log loss, calibración y benchmarks.
+  La vista de matchup muestra una estimación experimental solo cuando existe
+  muestra previa suficiente y el artefacto fue entrenado antes de la fecha.
 
 Las comparaciones de un partido usan resultados **anteriores a su fecha**. No
 incluyen ese resultado ni partidos posteriores. Los datos faltantes se muestran
@@ -36,6 +39,24 @@ publicados, no estado en vivo. Las fechas/horas se conservan como calendario NFL
 
 Definiciones, denominadores y límites: [docs/metrics.md](docs/metrics.md).
 Validación real: [docs/phase-2-real-check.json](docs/phase-2-real-check.json).
+Metodología y límites del motor: [docs/model-v0_1.md](docs/model-v0_1.md).
+
+## Evaluar el modelo
+
+```bash
+uv run python scripts/evaluate_model.py --seasons 2024 2025
+uv run python scripts/evaluate_model.py --seasons 2024 2025 --ablation --output .cache/model-evaluation.json
+uv run python scripts/analyze_model.py --season 2026 --team-a BUF --team-b MIA --as-of-date 2026-10-01 --home-team BUF
+```
+
+El segundo comando guarda resultados por partido y el análisis de eliminación
+de variables; `.cache` es local e ignorado por Git. Para regenerar el artefacto
+y el resumen visible en la interfaz, añadir `--model-output` seguido de
+`src/nfl_analytics/config/model_v0_1.json` y `--diagnostics-output` seguido de
+`src/nfl_analytics/config/model_v0_1_diagnostics.json`. Cada semana de evaluación
+usa únicamente partidos anteriores a su primer juego y vuelve a ajustar el modelo. Las
+fuentes retrospectivas pueden haber sido revisadas después de cada kickoff;
+consulta los límites documentados antes de interpretar las cifras.
 
 ## Requisitos e instalación
 
@@ -93,7 +114,7 @@ semana y convenciones de temporada en enero, playoffs y cambio de año de roster
 La integración no descarga play-by-play y reutiliza la caché si está vigente.
 Las pruebas de presentación usan AppTest con datos controlados y sin Internet;
 se permite únicamente el socket loopback que necesita asyncio en Windows.
-Resultado actual de fase 2: **53 pruebas unitarias/presentación aprobadas y
+Resultado histórico de la fase descriptiva: **53 pruebas unitarias/presentación aprobadas y
 2 integraciones aprobadas**. También se verificaron sincronización con lockfile,
 sintaxis, consultas reales con PBP y la interfaz en escritorio y móvil.
 Registro: [docs/phase-2-validation.md](docs/phase-2-validation.md).

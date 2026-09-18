@@ -43,7 +43,10 @@ def main() -> None:
                 return
             season = st.sidebar.selectbox("Temporada", years, index=len(years) - 1)
             games = calendar(season)
-        mode = st.sidebar.radio("Explorar", ["Partidos", "Comparar equipos"])
+        mode = st.sidebar.radio("Explorar", ["Partidos", "Comparar equipos", "Diagnóstico del modelo"])
+        if mode == "Diagnóstico del modelo":
+            _diagnostics()
+            return
         window_label = st.sidebar.selectbox("Ventana de análisis", ["Último partido", "Últimos 3", "Últimos 5", "Personalizada", "Temporada completa"], index=2)
         window = {"Último partido": 1, "Últimos 3": 3, "Últimos 5": 5, "Temporada completa": None}.get(window_label)
         if window_label == "Personalizada":
@@ -52,7 +55,7 @@ def main() -> None:
         h2h_label = st.sidebar.selectbox("Enfrentamientos anteriores", ["3", "5", "10", "Todos"], index=1)
         h2h_count = None if h2h_label == "Todos" else int(h2h_label)
         include_pbp = st.sidebar.checkbox("Incluir métricas avanzadas", help="Consulta una temporada de play-by-play; la primera carga es más lenta.")
-        st.sidebar.caption("Fuente única: nflverse mediante nflreadpy. Sin predicciones ni recomendaciones.")
+        st.sidebar.caption("Fuente única: nflverse mediante nflreadpy. Modelo experimental sin recomendaciones.")
         if mode == "Comparar equipos":
             _comparison(games, season, window, season_type, h2h_count, include_pbp)
             return
@@ -113,3 +116,29 @@ def _comparison(schedule, season, window, season_type, h2h_count, include_pbp):
         result = service.comparison(data, team_a, team_b, before=cutoff, games=window, season_type=season_type,
                                     injury_week=week, h2h_games=h2h_count)
     render_matchup(result)
+
+
+def _diagnostics():
+    report = service.model_diagnostics()
+    hero("Una hipótesis medible.", "Evaluación cronológica y límites de model_v0_1.", "LAB · VALIDACIÓN")
+    if report["accuracy"] <= report["benchmarks"]["better_record"]:
+        st.warning("Modelo experimental. Su accuracy no supera el benchmark de mejor récord; no usar como pick.")
+    else:
+        st.warning("Modelo experimental: una mejora en esta muestra no garantiza calibración ni rendimiento futuro; no usar como pick.")
+    st.caption(f"Temporadas: {report['seasons']} · Partidos: {report['games']} · Variables: {', '.join(report['features'])}")
+    cols = st.columns(3)
+    cols[0].metric("Accuracy", f"{report['accuracy']:.1%}")
+    cols[1].metric("Brier", f"{report['brier']:.3f}")
+    cols[2].metric("Log loss", f"{report['log_loss']:.3f}")
+    st.markdown("#### Benchmarks · accuracy")
+    st.dataframe([{"Regla": k, "Accuracy": v} for k, v in report["benchmarks"].items()], hide_index=True)
+    st.markdown("#### Calibración")
+    st.dataframe(report["calibration"], hide_index=True)
+    st.markdown("#### Coeficientes normalizados")
+    st.dataframe([{"Variable": k, "Coeficiente": v} for k, v in report["coefficients"].items()], hide_index=True)
+    if report.get("ablation"):
+        st.markdown("#### Ablación · Brier menor es mejor")
+        st.dataframe([{"Variante": k, "Brier": v["brier"], "Accuracy": v["accuracy"]}
+                      for k, v in report["ablation"].items()], hide_index=True)
+    st.caption(f"Artefacto entrenado con {report['trained_games']} partidos hasta {report['trained_through']}.")
+    st.caption("Cada semana se evalúa con un modelo entrenado antes de su primer partido; la fuente histórica puede contener revisiones posteriores a los partidos.")

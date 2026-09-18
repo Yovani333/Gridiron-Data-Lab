@@ -47,3 +47,11 @@ def season_data(season: int, *, include_pbp: bool = False) -> SeasonData:
         pbp=optional_dataset(lambda: nfl_data.load_play_by_play(season)) if include_pbp else Dataset(None, "not_loaded", "Activa las métricas avanzadas para consultar EPA y Success Rate."),
         read_at=datetime.now(timezone.utc),
     )
+
+
+def model_season_data(season: int) -> SeasonData:
+    """Only sources used by the initial regular-season model; no PBP download."""
+    absent = Dataset(None, "not_loaded", "Not used by model_v0_1")
+    return SeasonData(season, nfl_data.get_games(season), optional_dataset(nfl_data.load_teams),
+                      optional_dataset(lambda: nfl_data.get_team_stats(season)), absent, absent,
+                      absent, datetime.now(timezone.utc))

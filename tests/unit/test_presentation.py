@@ -47,6 +47,14 @@ def test_direct_comparison(app):
     assert len(app.tabs) == 8
 
 
+def test_model_diagnostics_are_separate_from_game_view(app):
+    app.run()
+    next(r for r in app.radio if r.label == "Explorar").set_value("Diagnóstico del modelo").run()
+    assert not app.exception
+    assert any("benchmark" in item.value.lower() for item in app.warning)
+    assert any("Brier" == item.label for item in app.metric)
+
+
 def test_source_failure(app, monkeypatch):
     def unavailable():
         raise RuntimeError("source offline")

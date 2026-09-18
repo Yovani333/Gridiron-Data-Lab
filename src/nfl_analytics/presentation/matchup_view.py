@@ -26,6 +26,22 @@ def render_matchup(result: dict) -> None:
     for name, label in (("stats", "Estadísticas"), ("injuries", "Lesiones"), ("teams", "Metadatos de equipos")):
         if result["availability"][name]["status"] == "unavailable":
             st.warning(f"{label}: fuente temporalmente no disponible. Las demás secciones siguen disponibles.")
+    model = result.get("model", {"status": "not_available"})
+    st.markdown("#### Modelo experimental")
+    if model["status"] == "retrospective_estimate":
+        st.warning("Estimación exploratoria. Consulta el diagnóstico y sus límites; no es una recomendación de apuesta.")
+        cols = st.columns(2)
+        cols[0].metric(f"Probabilidad {ta}", f"{model['team_a_probability']:.1%}")
+        cols[1].metric(f"Probabilidad {tb}", f"{model['team_b_probability']:.1%}")
+        st.caption(f"{model['model_version']} · Entrenado con {model['trained_games']} partidos hasta {model['trained_through']} · Rating relativo: {ta} {model['power_rating_a']:+.2f}, {tb} {model['power_rating_b']:+.2f} unidades de log odds.")
+        with st.expander("Factores del modelo"):
+            st.write("A favor de " + ta + ": " + (", ".join(model["factors_a"]) or "ninguno"))
+            st.write("A favor de " + tb + ": " + (", ".join(model["factors_b"]) or "ninguno"))
+            st.caption("Las contribuciones son asociaciones del modelo, no efectos causales. Lesiones, H2H y EPA no se incluyen en esta versión.")
+    elif model["status"] == "training_overlap":
+        st.info("No hay una evaluación histórica independiente para esta fecha: el modelo se entrenó con partidos posteriores. Consulta las métricas descriptivas.")
+    else:
+        st.info("Datos insuficientes para estimar este partido con la versión actual. Se requieren partidos y box scores previos para ambos equipos.")
     tabs = st.tabs(["Resumen", "Forma reciente", "Ofensiva", "Defensiva", "Local / visitante", "Historial", "Lesiones", "Avanzadas"])
     with tabs[0]:
         form_cards(a, b)

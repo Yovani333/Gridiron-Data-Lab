@@ -1,0 +1,107 @@
+{
+  "games": 403,
+  "accuracy": 0.6550868486352357,
+  "brier": 0.2204384968254999,
+  "log_loss": 0.6336461650321494,
+  "calibration": [
+    {
+      "bucket": "50-55%",
+      "games": 82,
+      "mean_predicted": 0.5259452359163869,
+      "actual_win_rate": 0.6097560975609756
+    },
+    {
+      "bucket": "55-60%",
+      "games": 79,
+      "mean_predicted": 0.5722268683225636,
+      "actual_win_rate": 0.5316455696202531
+    },
+    {
+      "bucket": "60-65%",
+      "games": 73,
+      "mean_predicted": 0.6245552500530901,
+      "actual_win_rate": 0.6438356164383562
+    },
+    {
+      "bucket": "65-70%",
+      "games": 60,
+      "mean_predicted": 0.6756894479363657,
+      "actual_win_rate": 0.6833333333333333
+    },
+    {
+      "bucket": "70-75%",
+      "games": 56,
+      "mean_predicted": 0.725012325355154,
+      "actual_win_rate": 0.6785714285714286
+    },
+    {
+      "bucket": "75-100%",
+      "games": 53,
+      "mean_predicted": 0.8082893294515797,
+      "actual_win_rate": 0.8679245283018868
+    }
+  ],
+  "model_version": "model_v0_1",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "features": [
+    "win_pct_diff",
+    "point_diff_diff",
+    "yards_per_play_diff",
+    "turnover_margin_diff",
+    "opponent_strength_diff",
+    "home_field"
+  ],
+  "eligible_games": 447,
+  "benchmarks": {
+    "better_record": 0.6898263027295285,
+    "better_point_diff": 0.6575682382133995,
+    "always_home": 0.5409429280397022
+  },
+  "ablation": {
+    "full": {
+      "games": 403,
+      "accuracy": 0.6550868486352357,
+      "brier": 0.2204384968254999,
+      "log_loss": 0.6336461650321494
+    },
+    "without_win_pct_diff": {
+      "games": 403,
+      "accuracy": 0.6228287841191067,
+      "brier": 0.2245291642179576,
+      "log_loss": 0.6418356212882458
+    },
+    "without_point_diff_diff": {
+      "games": 403,
+      "accuracy": 0.6501240694789082,
+      "brier": 0.22214165612978257,
+      "log_loss": 0.6375063815648888
+    },
+    "without_yards_per_play_diff": {
+      "games": 403,
+      "accuracy": 0.652605459057072,
+      "brier": 0.22093099128566795,
+      "log_loss": 0.633295867029939
+    },
+    "without_turnover_margin_diff": {
+      "games": 403,
+      "accuracy": 0.6625310173697271,
+      "brier": 0.21949208771320455,
+      "log_loss": 0.6311745820881947
+    },
+    "without_opponent_strength_diff": {
+      "games": 403,
+      "accuracy": 0.6600496277915633,
+      "brier": 0.2188997795040712,
+      "log_loss": 0.6303794981972523
+    },
+    "without_home_field": {
+      "games": 403,
+      "accuracy": 0.6203473945409429,
+      "brier": 0.22040037543363922,
+      "log_loss": 0.6339318424718051
+    }
+  }
+}

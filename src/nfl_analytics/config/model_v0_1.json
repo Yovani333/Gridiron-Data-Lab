@@ -1,0 +1,57 @@
+{
+  "version": "model_v0_1",
+  "features": [
+    "win_pct_diff",
+    "point_diff_diff",
+    "yards_per_play_diff",
+    "turnover_margin_diff",
+    "opponent_strength_diff",
+    "home_field"
+  ],
+  "means": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "scales": [
+    0.3988105294861622,
+    11.397096531409174,
+    0.8991873827437147,
+    5.61158915868812,
+    5.264229006718408,
+    1.0
+  ],
+  "coefficients": [
+    0.35256577867279126,
+    0.29805764029035603,
+    0.20269871219856828,
+    -0.02979378108796883,
+    -0.0008821657131108579,
+    0.13031019609806888
+  ],
+  "intercept": 2.4961390150968205e-18,
+  "trained_games": 447,
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trained_through": "2026-01-04",
+  "config": {
+    "recent_games": 5,
+    "min_games": 3,
+    "min_training_games": 40,
+    "regularization": 0.05,
+    "iterations": 200,
+    "learning_rate": 0.15
+  },
+  "rating_reference": {
+    "win_pct_diff": 0.49837807606263984,
+    "point_diff_diff": -0.012155108128262489,
+    "yards_per_play_diff": 5.386974114160642,
+    "turnover_margin_diff": -0.0044742729306487695,
+    "opponent_strength_diff": 0.05954050330728183
+  }
+}
