@@ -14,6 +14,12 @@ from .nfl_data import (
     load_schedules,
     load_team_stats,
     load_teams,
+    get_games,
+    get_games_by_date,
+    get_games_by_week,
+    get_team_games,
+    get_recent_games,
+    get_team_stats,
 )
 
 __all__ = [
@@ -21,4 +27,6 @@ __all__ = [
     "get_latest_completed_week", "get_schedule_seasons", "load_injuries",
     "load_play_by_play", "load_player_stats", "load_rosters", "load_schedules",
     "load_team_stats", "load_teams",
+    "get_games", "get_games_by_date", "get_games_by_week", "get_team_games",
+    "get_recent_games", "get_team_stats",
 ]

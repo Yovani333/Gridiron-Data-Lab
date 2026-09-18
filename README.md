@@ -3,14 +3,48 @@ Python-based football analytics platform for collecting, validating and analyzin
 
 ## Estado actual
 
-**Fase 1 — Data foundation con nflreadpy.** Paquete Python para obtener, explorar y
-validar datos NFL con Polars. El código reutilizable está separado de la exploración.
-Todavía no se implementan análisis avanzados, backend, interfaz web ni modelos.
+**Fase 2 — Análisis descriptivo y comparador NFL.** La base de datos en Python de
+la fase 1 ahora permite consultar partidos, calcular forma reciente, métricas de
+equipos y play-by-play, comparar rivales y visualizar resultados en una interfaz
+temporal Streamlit. La fuente sigue siendo exclusivamente nflverse/nflreadpy.
+No hay API propia, base de datos externa, predicciones, probabilidades ni apuestas.
+
+## Abrir la interfaz temporal
+
+```bash
+uv sync
+uv run streamlit run scripts/run_dashboard.py
+```
+
+Abrir la dirección local que indique Streamlit, normalmente `http://localhost:8501`.
+GitHub muestra la documentación; no ejecuta esta aplicación Python automáticamente.
+La interfaz corre localmente y no requiere un frontend JavaScript propio.
+
+- **Partidos:** temporada, semana o fecha; tarjetas con equipos, marcador y estado.
+- **Ver matchup:** forma reciente, ofensiva, defensiva, local/visitante, historial,
+  lesiones y métricas avanzadas lado a lado.
+- **Comparar equipos:** elegir dos equipos y una fecha de corte sin seleccionar partido.
+- Ventanas de 1, 3, 5, N partidos o temporada completa; regular, playoffs o ambas.
+- Historial de 3, 5, 10 o todos los enfrentamientos anteriores disponibles.
+- **Incluir métricas avanzadas** habilita la carga de una temporada PBP completa.
+  La primera carga puede tardar; los datos quedan cacheados.
+
+Las comparaciones de un partido usan resultados **anteriores a su fecha**. No
+incluyen ese resultado ni partidos posteriores. Los datos faltantes se muestran
+como «No disponible», junto con la cobertura. El calendario ofrece resultados
+publicados, no estado en vivo. Las fechas/horas se conservan como calendario NFL/ET.
+
+Definiciones, denominadores y límites: [docs/metrics.md](docs/metrics.md).
+Validación real: [docs/phase-2-real-check.json](docs/phase-2-real-check.json).
 
 ## Requisitos e instalación
 
 Entorno comprobado en Windows: **Python 3.14.5**, **uv 0.12.16**,
 **nflreadpy 0.1.5**, **Polars 1.44.2**, **pytest 9.1.1**.
+La interfaz temporal utiliza **Streamlit 1.64.0**, declarado como dependencia directa.
+Streamlit instala dependencias transitivas (entre ellas Pandas, Arrow y su servidor
+interno); nuestro código de datos y análisis continúa usando Polars nativo y no
+implementa endpoints ni convierte los DataFrames a Pandas.
 `nflreadpy` requiere Python >=3.10; este proyecto usa Python 3.14 y fija 3.14.5
 en `.python-version`, la versión disponible y probada. No se afirma compatibilidad
 probada con otras versiones. uv puede descargar ese intérprete si falta.
@@ -47,7 +81,7 @@ uv sync
 
 ```bash
 uv run pytest                  # unitarias, sin red
-uv run pytest -m integration   # integración explícita: calendario 2024
+uv run pytest -m integration   # integración explícita: calendario y box scores 2024
 uv run pytest -m ""            # toda la suite
 ```
 
@@ -56,6 +90,12 @@ exclusión por defecto. Las unitarias bloquean conexiones de socket y usan fixtu
 pequeñas; verifican argumentos, contratos, errores, delegación, operaciones Polars,
 semana y convenciones de temporada en enero, playoffs y cambio de año de rosters.
 La integración no descarga play-by-play y reutiliza la caché si está vigente.
+Las pruebas de presentación usan AppTest con datos controlados y sin Internet;
+se permite únicamente el socket loopback que necesita asyncio en Windows.
+Resultado actual de fase 2: **53 pruebas unitarias/presentación aprobadas y
+2 integraciones aprobadas**. También se verificaron sincronización con lockfile,
+sintaxis, consultas reales con PBP y la interfaz en escritorio y móvil.
+Registro: [docs/phase-2-validation.md](docs/phase-2-validation.md).
 Resultado de la validación inicial: **31 unitarias aprobadas y 1 integración
 aprobada**; sincronización normal y `--locked`, imports y exploración exitosos.
 También se repitió todo desde un clon nuevo de GitHub, con `.venv` nueva y caché
@@ -88,14 +128,28 @@ uv run python scripts/explore_nfl_data.py --dataset play_by_play --season 2024 -
 ## Arquitectura e interfaz
 
 ```text
-nflverse -> nflreadpy -> nfl_analytics.data -> analysis (futuro)
+nflverse -> nflreadpy -> nfl_analytics.data -> analysis -> presentation -> Streamlit
 
 src/nfl_analytics/
     __init__.py
     data/__init__.py
-    data/nfl_data.py
-    analysis/__init__.py
+    data/nfl_data.py          # único adaptador de nflreadpy
+    data/games.py             # normalización y consultas de calendario
+    data/stats.py             # contrato de estadísticas semanales
+    data/players.py           # lesiones, identidades y joins
+    data/teams.py             # alias de franquicias por ID del proveedor
+    data/datasets.py          # disponibilidad y carga de temporada
+    analysis/form.py         # ventanas, récord, head-to-head
+    analysis/team_stats.py   # métricas ofensivas/defensivas
+    analysis/play_by_play.py # EPA, éxito, explosivas, terceros downs, zona roja
+    analysis/matchup.py      # composición descriptiva
+    presentation/service.py # orquestación independiente de Streamlit
+    presentation/dashboard.py
+    presentation/matchup_view.py
+    presentation/components.py
 scripts/explore_nfl_data.py
+scripts/analyze_nfl.py
+scripts/run_dashboard.py
 tests/unit/test_nfl_data.py
 tests/integration/test_nflreadpy_integration.py
 docs/verified-data.json
@@ -103,7 +157,9 @@ docs/verified-data.json
 
 La dependencia externa está aislada en `data/nfl_data.py`. No se crea `config/`
 vacío: solo existe una configuración de caché, expuesta desde la misma frontera.
-`analysis/__init__.py` reserva deliberadamente el espacio de análisis futuro.
+`analysis/` contiene funciones que reciben DataFrames y no realizan descargas.
+La interfaz llama al servicio de presentación, que reúne datos y análisis; el
+servicio puede reutilizarse o sustituirse al construir una interfaz definitiva.
 
 ```python
 import polars as pl
@@ -137,7 +193,51 @@ de entrada son `ValueError`; fallos del proveedor/esquema/dataset vacío generan
 `NFLDataError` conservando la causa original. No sustituye fallos por datos inventados
 ni convierte resultados a Pandas. No elimina identificadores nulos automáticamente.
 Los consumidores usan `filter`, `select`, `group_by`, `join`, `sort` y demás operaciones
-nativas de Polars; no hay cálculos estadísticos propios en esta fase.
+nativas de Polars. Los loaders `load_*` conservan los contratos originales de fase 1;
+las nuevas funciones `get_*` entregan datos normalizados para el análisis.
+
+## Consultas y ejemplos de análisis
+
+```python
+from datetime import date, timedelta
+from nfl_analytics.data import nfl_data
+from nfl_analytics.data.datasets import season_data
+from nfl_analytics.analysis import recent_form, compare_teams, head_to_head
+
+nfl_data.configure_cache(".cache/nflreadpy")
+today = date.today()
+today_games = nfl_data.get_games_by_date(today)
+yesterday_games = nfl_data.get_games_by_date(today - timedelta(days=1))
+season = nfl_data.get_current_season()
+schedule = nfl_data.get_games(season)
+week_games = nfl_data.get_games_by_week(season, 2)
+recent = nfl_data.get_recent_games("BUF", season, games=5, before=today)
+form = recent_form(schedule, "BUF", games=3, before=today, venue="home")
+data = season_data(season, include_pbp=False)
+report = compare_teams(data, "BUF", "MIA", before=today, games=5, injury_week=2)
+offense = report["team_a"]["offense"]
+defense = report["team_a"]["defense"]
+injuries = report["injuries"]["BUF"]
+history = head_to_head(nfl_data.get_games(nfl_data.get_schedule_seasons()),
+                       "BUF", "MIA", games=10, before=today, catalog=data.teams.frame)
+```
+
+Equipos/semanas de los ejemplos son parámetros ilustrativos, no constantes internas.
+Para una comparación sin partido, las lesiones requieren seleccionar su semana.
+`analyze_matchup(data, game_id)` determina los equipos, semana y fecha desde el partido.
+Para relacionar estadísticas de jugadores: `attach_players(nfl_data.load_player_stats(season),
+nfl_data.load_rosters(season))` desde `nfl_analytics.data.players`; usa IDs, equipo y temporada.
+
+El script muestra consultas por fecha/semana, forma, historial, ofensiva, defensiva,
+lesiones y comparación en una salida JSON:
+
+```bash
+uv run python scripts/analyze_nfl.py --team BUF --opponent MIA
+uv run python scripts/analyze_nfl.py --season 2024 --team BUF --opponent MIA --date 2024-11-03 --week 9 --games 5 --pbp --matchup 2024_09_MIA_BUF --output .cache/comparison.json
+```
+
+La segunda orden es una demostración histórica reproducible con PBP optativo.
+No hay descargas PBP en pytest ni al abrir la cartelera por defecto.
 
 ## API real de nflreadpy investigada
 
@@ -231,7 +331,13 @@ por eso no se valida que haya exactamente 32 filas.
 
 ## Caché y eficiencia
 
-Se reutiliza la implementación de nflreadpy, sin caché propia:
+Se reutiliza la implementación de archivos de nflreadpy:
+
+El dashboard agrega una caché de resultados en memoria de Streamlit de 15 minutos
+(máximo cuatro conjuntos de análisis), sobre la caché de archivos de nflreadpy.
+«Actualizar vista» limpia esa memoria, no fuerza una descarga remota. Para
+forzar la actualización de un dataset puede usarse el explorador con `--refresh`.
+La hora de lectura visible no es una garantía de la última actualización del origen.
 
 - Upstream usa **memoria** por defecto: solo reutiliza durante ese proceso.
 - Exploración e integración llaman a `configure_cache` y usan
@@ -264,5 +370,7 @@ bytes descargados. No compartir archivos de caché ni `.venv` en Git.
 
 ## Próximas fases
 
-Análisis estadístico, métricas avanzadas, backend e interfaz web se incorporarán
-posteriormente como consumidores de esta capa. No forman parte de esta entrega.
+La fase actual se detiene en datos, métricas descriptivas y presentación temporal.
+Una futura fase podrá estudiar fuerza del rival, ajustes por calendario y una
+interfaz definitiva. Los registros conservan oponente y `game_id` para esos ajustes.
+No se implementaron modelos predictivos, odds, picks, parlays ni integraciones externas.

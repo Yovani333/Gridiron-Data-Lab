@@ -1,6 +1,7 @@
 """Thin, typed boundary around nflreadpy; no analytics or implicit bulk loads."""
 
 from collections.abc import Callable
+from datetime import date
 from pathlib import Path
 from typing import Literal
 
@@ -129,3 +130,42 @@ def get_latest_completed_week(season: int) -> int | None:
     """Latest week with at least one scored game; not necessarily fully completed."""
     frame = load_schedules(season)
     return frame.filter(pl.col("home_score").is_not_null() & pl.col("away_score").is_not_null()).get_column("week").max()
+
+
+def get_games(seasons: Seasons) -> pl.DataFrame:
+    """Normalized schedule without betting columns."""
+    from .games import normalize_games
+    return normalize_games(load_schedules(seasons))
+
+
+def get_games_by_date(day: date | str, seasons: Seasons | None = None) -> pl.DataFrame:
+    """Date is the schedule's game date, not a viewer-timezone conversion."""
+    from .games import as_date, games_by_date
+    day = as_date(day)
+    if seasons is None:
+        # Calendar lookup searches published seasons, including offseason schedules.
+        seasons = [s for s in get_schedule_seasons() if s in (day.year - 1, day.year)]
+        if not seasons:
+            raise ValueError("No published schedule seasons for this date")
+    return games_by_date(get_games(seasons), day)
+
+
+def get_games_by_week(season: int, week: int) -> pl.DataFrame:
+    from .games import games_by_week
+    return games_by_week(get_games(season), week)
+
+
+def get_team_games(team: str, seasons: Seasons, **filters) -> pl.DataFrame:
+    from .games import team_games
+    return team_games(get_games(seasons), team, **filters)
+
+
+def get_recent_games(team: str, seasons: Seasons, games: int = 5, **filters) -> pl.DataFrame:
+    from .games import recent_games
+    return recent_games(get_games(seasons), team, games, **filters)
+
+
+def get_team_stats(seasons: Seasons) -> pl.DataFrame:
+    """Weekly box scores with positive sack-loss magnitudes."""
+    from .stats import normalize_team_stats
+    return normalize_team_stats(load_team_stats(seasons))
