@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local uv bootstrap and nflreadpy persistent datasets (never commit data)
+.cache/

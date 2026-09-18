@@ -1,0 +1,1 @@
+"""NFL analytics data foundation."""

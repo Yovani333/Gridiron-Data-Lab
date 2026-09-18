@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nfl-analytics"
+version = "0.1.0"
+description = "NFL data foundation with nflreadpy and native Polars DataFrames"
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "nflreadpy>=0.1.5",
+    "polars>=1.44.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nfl_analytics"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -m 'not integration'"
+markers = ["integration: explicit network tests against nflverse"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
