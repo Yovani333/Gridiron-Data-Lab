@@ -1,5 +1,6 @@
 """Application orchestration. The Streamlit view consumes this interface only."""
 
+from datetime import date
 from pathlib import Path
 import json
 
@@ -8,6 +9,9 @@ import polars as pl
 from nfl_analytics.analysis.matchup import analyze_matchup, compare_teams
 from nfl_analytics.analysis.engine import analyze_probability
 from nfl_analytics.analysis.probability import load_model
+from nfl_analytics.analysis.leaders import season_leaders
+from nfl_analytics.analysis.signals import analyze_signal
+from nfl_analytics.analysis.form import recent_form
 from nfl_analytics.data import nfl_data
 from nfl_analytics.data.datasets import SeasonData, season_data
 from nfl_analytics.data.games import games_by_date, games_by_week
@@ -42,6 +46,52 @@ def history() -> pl.DataFrame:
     return nfl_data.get_games(seasons())
 
 
+def upcoming(schedule: pl.DataFrame, *, today: date | None = None, limit: int = 4) -> list[dict]:
+    """Future unscored games; schedules are not a live status feed."""
+    today = today or date.today()
+    games = (schedule.filter((pl.col("date") >= today) & (pl.col("status") != "result_available"))
+             .sort(["date", "gametime", "game_id"]).head(limit).to_dicts())
+    for game in games:
+        game["records"] = {}
+        for team in (game["home_team"], game["away_team"]):
+            form = recent_form(schedule, team, games=None, before=game["date"], season_type="REG")
+            game["records"][team] = f"{form['wins']}-{form['losses']}-{form['ties']}" if form["games"] else None
+    return games
+
+
+def overview(schedule: pl.DataFrame, *, seasons_available: list[int], players: pl.DataFrame | None) -> dict:
+    teams = set(schedule["home_team"].drop_nulls().to_list()) | set(schedule["away_team"].drop_nulls().to_list())
+    return {"teams": len(teams), "players": players["player_id"].drop_nulls().n_unique() if players is not None else None,
+            "games": schedule.height, "seasons": (min(seasons_available), max(seasons_available)) if seasons_available else None}
+
+
+def player_stats(season: int) -> pl.DataFrame | None:
+    """Optional weekly player data; a missing publication must not break schedules."""
+    try:
+        return nfl_data.load_player_stats(season)
+    except (nfl_data.NFLDataError, ValueError):
+        return None
+
+
+def leaders(players: pl.DataFrame | None, category: str) -> pl.DataFrame:
+    return season_leaders(players, category) if players is not None else pl.DataFrame()
+
+
+def result_distribution(schedule: pl.DataFrame) -> dict:
+    completed = schedule.filter((pl.col("status") == "result_available") & (pl.col("season_type") == "REG"))
+    return {"home": completed.filter(pl.col("home_score") > pl.col("away_score")).height,
+            "away": completed.filter(pl.col("home_score") < pl.col("away_score")).height,
+            "ties": completed.filter(pl.col("home_score") == pl.col("away_score")).height}
+
+
+def featured_signals(data: SeasonData, games: list[dict]) -> list[dict]:
+    try:
+        historical = history()
+    except nfl_data.NFLDataError:
+        historical = data.games
+    return [analyze_signal(data, game, history=historical) for game in games]
+
+
 def matchup(data: SeasonData, game_id: str, *, games: int | None = 5, season_type: str = "REG", h2h_games: int | None = 5) -> dict:
     try:
         historical = history()
@@ -52,6 +102,7 @@ def matchup(data: SeasonData, game_id: str, *, games: int | None = 5, season_typ
     result = analyze_matchup(data, game_id, games=games, season_type=season_type, history=historical, h2h_games=h2h_games)
     result["history_warning"] = history_warning
     game = result["game"]
+    result["signal"] = analyze_signal(data, game, history=historical)
     result["model"] = model_projection(data, game["home_team"], game["away_team"],
                                        as_of_date=game["date"], home_team=game["home_team"])
     return result

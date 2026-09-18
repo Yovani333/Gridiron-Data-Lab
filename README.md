@@ -20,6 +20,19 @@ Abrir la dirección local que indique Streamlit, normalmente `http://localhost:8
 GitHub muestra la documentación; no ejecuta esta aplicación Python automáticamente.
 La interfaz corre localmente y no requiere un frontend JavaScript propio.
 
+- **Inicio:** dashboard oscuro con próximos partidos, señales descriptivas,
+  cobertura de datos, líderes y gráficas calculadas de calendarios y estadísticas.
+- **Análisis y posibles picks:** regla transparente que contrasta forma reciente,
+  diferencial, ofensiva, defensiva, splits local/visitante e historial. Exige tres
+  juegos previos por equipo; muestra «muestra insuficiente» en caso contrario.
+  Los pesos están en `analysis/signal_config.py`; la señal Baja/Media/Alta
+  expresa únicamente una diferencia de factores, no probabilidad calibrada,
+  ventaja de apuesta ni recomendación. El H2H pesa 0,5 frente a 1 de los
+  demás factores. No se asignan puntos de localía sin datos de split.
+- **Jugadores y Estadísticas:** líderes Passing/Rushing/Receiving/Defense
+  agregados por `player_id` en temporada regular; temporada seleccionable.
+  Si no hay estadísticas publicadas, se indica; Inicio puede mostrar una
+  temporada anterior y la identifica expresamente.
 - **Partidos:** temporada, semana o fecha; tarjetas con equipos, marcador y estado.
 - **Ver matchup:** forma reciente, ofensiva, defensiva, local/visitante, historial,
   lesiones y métricas avanzadas lado a lado.
@@ -165,6 +178,9 @@ src/nfl_analytics/
     analysis/team_stats.py   # métricas ofensivas/defensivas
     analysis/play_by_play.py # EPA, éxito, explosivas, terceros downs, zona roja
     analysis/matchup.py      # composición descriptiva
+    analysis/leaders.py      # líderes reales a partir de estadísticas semanales
+    analysis/signals.py      # contraste descriptivo previo al partido
+    analysis/signal_config.py # pesos y mínimos visibles, no calibrados
     presentation/service.py # orquestación independiente de Streamlit
     presentation/dashboard.py
     presentation/matchup_view.py
@@ -392,7 +408,7 @@ bytes descargados. No compartir archivos de caché ni `.venv` en Git.
 
 ## Próximas fases
 
-La fase actual se detiene en datos, métricas descriptivas y presentación temporal.
-Una futura fase podrá estudiar fuerza del rival, ajustes por calendario y una
-interfaz definitiva. Los registros conservan oponente y `game_id` para esos ajustes.
-No se implementaron modelos predictivos, odds, picks, parlays ni integraciones externas.
+Se podrá validar o descartar la regla descriptiva con evaluación cronológica,
+estudiar fuerza del rival y ajustar las métricas por calendario. El motor
+probabilístico experimental existente se mantiene separado y aún no supera
+su benchmark de mejor récord. No se integran odds, parlays ni servicios externos.

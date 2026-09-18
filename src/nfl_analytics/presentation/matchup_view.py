@@ -3,7 +3,7 @@
 import polars as pl
 import streamlit as st
 
-from .components import form_cards, games_table, hero, metric_table
+from .components import form_cards, games_table, heading, hero, metric_table, signal_card
 from .formatting import value
 
 
@@ -23,6 +23,18 @@ def render_matchup(result: dict) -> None:
     st.caption("Las divisiones del catálogo describen la alineación actual; no se reconstruyen cambios históricos de conferencia.")
     if result.get("history_warning"):
         st.warning(result["history_warning"])
+    if "signal" in result:
+        heading("Resumen del análisis", "Contrastes previos a este partido; pesos explícitos y sin validación predictiva.")
+        signal_card(result["signal"])
+        signal = result["signal"]
+        if signal["status"] == "descriptive_only":
+            cols = st.columns(2)
+            for col, team in zip(cols, (signal["home"], signal["away"])):
+                with col:
+                    st.caption(f"Factores favorables a {team}")
+                    factors = [f for f in signal["factors"] if f["team"] == team]
+                    st.write(" · ".join(f"+{abs(f['points']):g} {f['label']}" for f in factors) or "Sin factores diferenciadores en esta muestra")
+            st.caption("La señal suma diferencias de forma, puntos, local/visitante e historial (este último con peso reducido). No mide certeza ni valor de apuesta.")
     for name, label in (("stats", "Estadísticas"), ("injuries", "Lesiones"), ("teams", "Metadatos de equipos")):
         if result["availability"][name]["status"] == "unavailable":
             st.warning(f"{label}: fuente temporalmente no disponible. Las demás secciones siguen disponibles.")

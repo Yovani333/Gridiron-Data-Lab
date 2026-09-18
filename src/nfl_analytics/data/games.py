@@ -33,13 +33,14 @@ def normalize_games(frame: pl.DataFrame, *, today: date | None = None) -> pl.Dat
     """Scores imply a published result, not a live-clock or official status feed."""
     require_columns(frame, {"game_id", "season", "week", "game_type", "gameday", "home_team", "away_team", "home_score", "away_score"})
     today = today or date.today()
-    optional = {"gametime": pl.String, "location": pl.String, "div_game": pl.Int32}
+    optional = {"gametime": pl.String, "location": pl.String, "div_game": pl.Int32,
+                "stadium": pl.String}
     frame = frame.with_columns([pl.lit(None, dtype=t).alias(c) for c, t in optional.items() if c not in frame.columns])
     result = frame.select(
         "game_id", pl.col("season").cast(pl.Int32), pl.col("week").cast(pl.Int32),
         pl.col("game_type").alias("season_type"),
         pl.col("gameday").cast(pl.String).str.to_date(strict=True).alias("date"),
-        "gametime", "home_team", "away_team",
+        "gametime", "stadium", "home_team", "away_team",
         pl.col("home_score").cast(pl.Int32), pl.col("away_score").cast(pl.Int32),
         (pl.col("location").str.to_lowercase() == "neutral").fill_null(False).alias("neutral_site"),
         pl.col("div_game").cast(pl.Boolean).alias("divisional"),

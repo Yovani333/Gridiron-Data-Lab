@@ -10,39 +10,93 @@ from .formatting import METRICS, DEFENSE_LABELS, value, record
 
 def brand() -> None:
     st.html("""<style>
-    .stApp {background:#f4f6f8;color:#172332}
-    .block-container {max-width:1440px;padding-top:4.5rem;padding-bottom:4rem}
-    h1,h2,h3 {letter-spacing:-.035em}
-    [data-testid=stSidebar] {background:#eaf0f4;border-right:1px solid #dae2e9}
-    [data-testid=stMetric] {background:white;border:1px solid #dfe6eb;border-radius:12px;padding:18px}
-    [data-testid=stVerticalBlockBorderWrapper] {border-radius:14px}
-    .brand {font-size:12px;font-weight:800;letter-spacing:.24em;color:#506576;margin-bottom:18px}
-    .hero {background:#142536;border-radius:18px;padding:22px 28px;color:#f7f8fb;margin:4px 0 16px}
-    .hero h1 {font-size:32px;color:#f7f8fb;margin:0 0 10px;line-height:1.1}
-    .hero p {color:#bdccd9;margin:0;font-size:15px}
-    .eyebrow {color:#e5ba71;font-size:11px;letter-spacing:.17em;font-weight:700;margin-bottom:12px}
+    :root {color-scheme:dark}
+    .stApp {background:linear-gradient(135deg,#07111f,#0a1625 55%,#07111f);color:#eaf2ff}
+    .block-container {max-width:1500px;padding-top:4.5rem;padding-bottom:2.5rem}
+    h1,h2,h3 {letter-spacing:-.035em;color:#f4f8ff}
+    [data-testid=stSidebar] {background:#0b1728;border-right:1px solid #23374b}
+    [data-testid=stMetric], [data-testid=stVerticalBlockBorderWrapper] {background:#101e31;border:1px solid #263b51;border-radius:13px;padding:8px}
+    [data-testid=stMetricLabel] {color:#a8bbce}
+    [data-testid=stMetricValue] {color:#f4f8ff}
+    [data-testid=stDataFrame] {border:1px solid #263b51;border-radius:12px;overflow:hidden}
+    button[kind=primary] {background:#1685ff;border-color:#1685ff;color:white}
+    button:hover {border-color:#67b1ff!important;color:white!important}
+    .hub-brand {display:flex;align-items:center;gap:12px;padding:7px 2px 10px;border-bottom:1px solid #213347;margin-bottom:7px}
+    .hub-mark {height:36px;width:36px;display:grid;place-items:center;border-radius:10px;background:#1685ff;color:white;font-size:22px;font-weight:900;box-shadow:0 0 28px #1685ff50}
+    .hub-brand strong {font-size:17px;letter-spacing:-.04em;color:#f4f8ff}
+    .hub-brand small {display:block;color:#9aafc5;font-size:11px}
+    .hero {position:relative;isolation:isolate;overflow:hidden;min-height:260px;background:radial-gradient(circle at 74% 42%,#153c68,transparent 37%),linear-gradient(105deg,#101e31,#0b1828 58%,#081321);border:1px solid #253d57;border-radius:17px;padding:42px 44px;margin:15px 0 16px}
+    .hero:after {content:'';position:absolute;right:-35px;top:-62px;width:460px;height:360px;border:2px solid #4385cf4a;border-radius:50%;box-shadow:0 0 0 50px #2d68ad19,0 0 0 101px #2d68ad14;transform:rotate(-25deg);z-index:-1}
+    .hero:before {content:'GRIDIRON';position:absolute;right:65px;bottom:23px;color:#9fc7f13a;font-size:56px;font-weight:900;font-style:italic;letter-spacing:-.08em}
+    .hero-ball {position:absolute;right:13%;top:24%;width:205px;height:116px;border:3px solid #a8d7ff99;border-radius:50%;background:linear-gradient(145deg,#2a6093,#123454 65%,#0c233f);box-shadow:0 20px 55px #020c1f88,0 0 45px #1685ff44;transform:rotate(-28deg)}
+    .hero-ball:before {content:'';position:absolute;left:36px;right:36px;top:53px;border-top:4px solid #cee8ffb0}
+    .hero-ball:after {content:'╪╪╪╪';position:absolute;left:75px;top:33px;color:#d4efff;font-size:27px;letter-spacing:-6px;transform:rotate(90deg)}
+    .hero h1 {font-size:clamp(32px,4vw,56px);color:white;line-height:1.06;margin:0 0 16px;max-width:700px}
+    .hero p {max-width:600px;color:#b5c7d9;font-size:17px;line-height:1.55;margin:0}
+    .eyebrow {color:#53a9ff;font-size:11px;letter-spacing:.2em;font-weight:800;margin-bottom:20px}
+    .section-title {font-size:23px;font-weight:750;letter-spacing:-.03em;color:#f0f6ff;margin:18px 0 5px}
+    .section-note {color:#95a9bf;font-size:13px;margin:0 0 13px}
     .game-line {display:flex;justify-content:space-between;align-items:center;padding:9px 0}
-    .team-code {font-weight:750;font-size:28px;letter-spacing:-.04em}
-    .score {font-weight:600;font-size:24px;color:#506576}
-    .small-label {font-size:11px;letter-spacing:.09em;color:#647a8b;text-transform:uppercase}
-    .chip {display:inline-block;background:#e8eef4;padding:4px 9px;border-radius:20px;font-size:11px;color:#354d61}
-    @media(max-width:600px) {.hero {padding:22px}.hero h1 {font-size:28px}}
-    </style><div class="brand">GRIDIRON <span style="color:#a07836">/</span> DATA LAB</div>""")
+    .team-code {font-weight:800;font-size:28px;letter-spacing:-.04em;color:#f5f8ff}
+    .score {font-weight:650;font-size:23px;color:#bdd4ed}
+    .small-label {font-size:11px;letter-spacing:.09em;color:#9cb2c8;text-transform:uppercase}
+    .chip {display:inline-block;background:#183759;padding:5px 10px;border-radius:20px;font-size:11px;color:#8fc4ff}
+    .signal {background:#101e31;border:1px solid #29435b;border-radius:14px;padding:18px;min-height:195px;margin:7px 0 10px;transition:transform .15s,border-color .15s}
+    .signal:hover {transform:translateY(-2px);border-color:#3770a9}
+    .signal .label {color:#8db0d0;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+    .signal h3 {margin:8px 0;font-size:21px}
+    .signal .lean {color:#f3f8ff;font-weight:700;font-size:17px}
+    .signal .level {font-size:11px;color:#9ce1c1;border:1px solid #43846b;padding:3px 7px;border-radius:10px}
+    .signal ul {margin:10px 0 0;padding-left:17px;color:#aec3d5;font-size:12px;line-height:1.7}
+    .empty-note {color:#98acc0;font-size:13px;line-height:1.5}
+    .hub-footer {border-top:1px solid #23384d;padding:26px 0 5px;margin-top:35px;color:#9db0c6;font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .hub-footer strong {color:#edf5ff}.hub-footer a {color:#59a9ff}
+    @media(max-width:700px) {
+      [data-testid="stHorizontalBlock"] {flex-direction:column!important;gap:12px!important}
+      [data-testid="stColumn"] {width:100%!important;min-width:0!important;flex:1 1 auto!important}
+      .hero {padding:25px;min-height:215px}.hero:before,.hero-ball {display:none}.hero h1 {font-size:34px}.hero p {font-size:14px}
+      .signal {min-height:0}.block-container {padding-left:1rem;padding-right:1rem}
+    }
+    </style><div class="hub-brand"><span class="hub-mark">N</span><span><strong>NFL Analytics Hub</strong><small>Powered by nflreadpy · Gridiron Data Lab</small></span></div>""")
 
 
 def hero(title: str, subtitle: str, eyebrow: str = "NFL · ANÁLISIS DESCRIPTIVO") -> None:
-    st.html(f'<section class="hero"><div class="eyebrow">{escape(eyebrow)}</div><h1>{escape(title)}</h1><p>{escape(subtitle)}</p></section>')
+    st.html(f'<section class="hero"><div class="hero-ball" aria-hidden="true"></div><div class="eyebrow">{escape(eyebrow)}</div><h1>{escape(title)}</h1><p>{escape(subtitle)}</p></section>')
+
+
+def heading(title: str, note: str = "") -> None:
+    st.html(f'<div class="section-title">{escape(title)}</div><p class="section-note">{escape(note)}</p>')
+
+
+def signal_card(signal: dict) -> None:
+    home, away = escape(signal["home"]), escape(signal["away"])
+    if signal["status"] == "insufficient_data":
+        body = f'<p class="empty-note">Muestra insuficiente: {home} {signal["samples"][signal["home"]]} · {away} {signal["samples"][signal["away"]]} partidos previos. Se requieren al menos 3 por equipo.</p>'
+    elif signal["lean"]:
+        factors = [f for f in signal["factors"] if f["team"] == signal["lean"]]
+        reasons = "".join(f'<li>+{abs(f["points"]):g} {escape(f["label"])}</li>' for f in factors[:4])
+        body = f'<div class="lean">Lean {escape(signal["lean"])} <span class="level">Señal {escape(signal["level"])}</span></div><ul>{reasons}</ul>'
+    else:
+        body = '<p class="empty-note">Sin diferencia neta en los factores disponibles.</p>'
+    st.html(f'<article class="signal"><span class="label">ANÁLISIS DESCRIPTIVO · {home} LOCAL</span><h3>{away} <span style="color:#68849e">vs</span> {home}</h3>{body}</article>')
+
+
+def footer() -> None:
+    st.html('<footer class="hub-footer"><span><strong>NFL Analytics Hub</strong><br>Datos mediante nflreadpy / nflverse · Análisis estadístico descriptivo</span><span><a href="https://github.com/Yovani333/Gridiron-Data-Lab">GitHub</a> · Sin recomendaciones de apuestas</span></footer>')
 
 
 def game_card(game: dict) -> bool:
     statuses = {"result_available": "Resultado publicado", "awaiting_update": "Resultado pendiente", "scheduled": "Programado"}
     with st.container(border=True):
-        st.html(f'<span class="chip">{statuses[game["status"]]}</span><div class="small-label" style="margin-top:14px">SEMANA {game["week"]} · {game["season_type"]}</div>')
+        st.html(f'<span class="chip">{statuses.get(game["status"], "Estado no disponible")}</span><div class="small-label" style="margin-top:14px">SEMANA {game["week"]} · {escape(game["season_type"])}</div>')
         for side, label in (("away", "Visitante"), ("home", "Local")):
             score = game[f"{side}_score"]
-            st.html(f'<div class="game-line"><div><span class="team-code">{escape(game[f"{side}_team"])}</span> <span class="small-label">{label}</span></div><span class="score">{score if score is not None else "—"}</span></div>')
-        st.caption(f"{game['date']} · {game['gametime'] or 'Hora por confirmar'} ET" + (" · Sede neutral" if game["neutral_site"] else ""))
-        return st.button("Ver matchup →", key=f"game_{game['game_id']}", width="stretch")
+            team = game[f"{side}_team"]
+            record_text = game.get("records", {}).get(team)
+            display = f" · {record_text}" if record_text else ""
+            st.html(f'<div class="game-line"><div><span class="team-code">{escape(team)}</span> <span class="small-label">{label}{display}</span></div><span class="score">{score if score is not None else "—"}</span></div>')
+        st.caption(f"{game['date']} · {game['gametime'] or 'Hora por confirmar'} ET" + (f" · {game['stadium']}" if game.get("stadium") else ""))
+        return st.button("Ver análisis completo →", key=f"game_{game['game_id']}", width="stretch")
 
 
 def metric_table(a: dict, b: dict, team_a: str, team_b: str, *, defense: bool = False, advanced: bool = False) -> None:
