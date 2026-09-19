@@ -12,6 +12,7 @@ from nfl_analytics.analysis.probability import load_model
 from nfl_analytics.analysis.leaders import season_leaders
 from nfl_analytics.analysis.signals import analyze_signal
 from nfl_analytics.analysis.form import recent_form
+from nfl_analytics.analysis.pick_engine import analyze_picks
 from nfl_analytics.data import nfl_data
 from nfl_analytics.data.datasets import SeasonData, season_data
 from nfl_analytics.data.games import games_by_date, games_by_week
@@ -92,6 +93,15 @@ def featured_signals(data: SeasonData, games: list[dict]) -> list[dict]:
     return [analyze_signal(data, game, history=historical) for game in games]
 
 
+def featured_picks(data: SeasonData, games: list[dict]) -> list[dict]:
+    """Reuse the descriptive pipeline; no probability model or quote downloads."""
+    try:
+        historical = history()
+    except nfl_data.NFLDataError:
+        historical = data.games
+    return [analyze_picks(analyze_matchup(data, game["game_id"], history=historical), data.games) for game in games]
+
+
 def matchup(data: SeasonData, game_id: str, *, games: int | None = 5, season_type: str = "REG", h2h_games: int | None = 5) -> dict:
     try:
         historical = history()
@@ -103,6 +113,7 @@ def matchup(data: SeasonData, game_id: str, *, games: int | None = 5, season_typ
     result["history_warning"] = history_warning
     game = result["game"]
     result["signal"] = analyze_signal(data, game, history=historical)
+    result["potential_picks"] = analyze_picks(result, data.games)
     result["model"] = model_projection(data, game["home_team"], game["away_team"],
                                        as_of_date=game["date"], home_team=game["home_team"])
     return result
@@ -117,6 +128,7 @@ def comparison(data: SeasonData, team_a: str, team_b: str, **options) -> dict:
         warning = "Historial completo no disponible: se muestra solo la temporada seleccionada."
     result = compare_teams(data, team_a, team_b, history=historical, **options)
     result["history_warning"] = warning
+    result["potential_picks"] = analyze_picks(result, data.games)
     result["model"] = model_projection(data, team_a, team_b, as_of_date=result["before"])
     return result
 

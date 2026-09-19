@@ -5,6 +5,7 @@ import streamlit as st
 
 from .components import form_cards, games_table, heading, hero, metric_table, signal_card
 from .formatting import value
+from .picks_view import render_picks
 
 
 def render_matchup(result: dict) -> None:
@@ -23,7 +24,9 @@ def render_matchup(result: dict) -> None:
     st.caption("Las divisiones del catálogo describen la alineación actual; no se reconstruyen cambios históricos de conferencia.")
     if result.get("history_warning"):
         st.warning(result["history_warning"])
-    if "signal" in result:
+    if "potential_picks" in result:
+        render_picks(result["potential_picks"])
+    elif "signal" in result:
         heading("Resumen del análisis", "Contrastes previos a este partido; pesos explícitos y sin validación predictiva.")
         signal_card(result["signal"])
         signal = result["signal"]
@@ -40,6 +43,7 @@ def render_matchup(result: dict) -> None:
             st.warning(f"{label}: fuente temporalmente no disponible. Las demás secciones siguen disponibles.")
     model = result.get("model", {"status": "not_available"})
     st.markdown("#### Modelo experimental")
+    st.caption("Motor previo independiente: sus probabilidades no intervienen en Potential Picks ni en el Pick Score.")
     if model["status"] == "retrospective_estimate":
         st.warning("Estimación exploratoria. Consulta el diagnóstico y sus límites; no es una recomendación de apuesta.")
         cols = st.columns(2)

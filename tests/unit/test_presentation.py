@@ -31,6 +31,15 @@ def test_dashboard_and_matchup(app):
     assert len(app.tabs) == 8
     assert any("no disponibles" in item.value.lower() for item in app.info)
     assert len(app.dataframe) >= 4
+    assert any("Pick Score" in item.value for item in app.info)
+    assert any("Muestra insuficiente" in item.value for item in app.subheader)
+
+
+def test_home_button_navigates_without_mutating_an_active_widget(app):
+    app.run()
+    next(button for button in app.button if button.label == "Explorar partidos").click().run()
+    assert not app.exception
+    assert any(r.label == "Consultar por" for r in app.radio)
 
 
 def test_date_with_no_games(app):

@@ -22,13 +22,13 @@ La interfaz corre localmente y no requiere un frontend JavaScript propio.
 
 - **Inicio:** dashboard oscuro con próximos partidos, señales descriptivas,
   cobertura de datos, líderes y gráficas calculadas de calendarios y estadísticas.
-- **Análisis y posibles picks:** regla transparente que contrasta forma reciente,
-  diferencial, ofensiva, defensiva, splits local/visitante e historial. Exige tres
-  juegos previos por equipo; muestra «muestra insuficiente» en caso contrario.
-  Los pesos están en `analysis/signal_config.py`; la señal Baja/Media/Alta
-  expresa únicamente una diferencia de factores, no probabilidad calibrada,
-  ventaja de apuesta ni recomendación. El H2H pesa 0,5 frente a 1 de los
-  demás factores. No se asignan puntos de localía sin datos de split.
+- **Potential Picks / Posibles Picks:** resumen del mejor candidato en Inicio y
+  detalle de Moneyline, Spread, Game Total y Team Total en cada matchup. El
+  `Pick Score` es un índice explicable 0–100, **no un porcentaje de acierto**.
+  Exige tres juegos previos por equipo; descarta señales débiles. Sin línea
+  verificable muestra solamente Statistical Leans. Los totales se comparan con
+  el promedio NFL anterior al corte, nunca con líneas inventadas. Pesos y mínimos
+  en `analysis/pick_config.py`; factores favorables, contrapesos y faltantes visibles.
 - **Jugadores y Estadísticas:** líderes Passing/Rushing/Receiving/Defense
   agregados por `player_id` en temporada regular; temporada seleccionable.
   Si no hay estadísticas publicadas, se indica; Inicio puede mostrar una
@@ -53,6 +53,17 @@ publicados, no estado en vivo. Las fechas/horas se conservan como calendario NFL
 Definiciones, denominadores y límites: [docs/metrics.md](docs/metrics.md).
 Validación real: [docs/phase-2-real-check.json](docs/phase-2-real-check.json).
 Metodología y límites del motor: [docs/model-v0_1.md](docs/model-v0_1.md).
+Metodología de mercados y Pick Score: [docs/potential-picks.md](docs/potential-picks.md).
+
+Exportar un reporte reproducible de Potential Picks:
+
+```bash
+uv run python scripts/analyze_picks.py --season 2024 --game-id 2024_14_BUF_LA --output .cache/picks-2024-14.json
+```
+
+La salida conserva fecha de corte, configuración, factores y resultado
+retrospectivo frente a la referencia utilizada. No sobrescribe archivos previos.
+No evalúa rentabilidad ni convierte el score en probabilidad.
 
 ## Evaluar el modelo
 
@@ -181,10 +192,17 @@ src/nfl_analytics/
     analysis/leaders.py      # líderes reales a partir de estadísticas semanales
     analysis/signals.py      # contraste descriptivo previo al partido
     analysis/signal_config.py # pesos y mínimos visibles, no calibrados
+    analysis/matchup_evidence.py # evidencia pregame reutilizando perfiles existentes
+    analysis/market_analysis.py # factores específicos por mercado y scoring
+    analysis/market_lines.py  # contrato futuro de líneas verificadas, sin proveedor
+    analysis/pick_engine.py   # filtros, candidatos y ranking
+    analysis/pick_config.py   # metodología versionada y configurable
+    analysis/pick_validation.py # liquidación de reportes congelados
     presentation/service.py # orquestación independiente de Streamlit
     presentation/dashboard.py
     presentation/matchup_view.py
     presentation/components.py
+    presentation/picks_view.py # tarjetas y explicación de Potential Picks
 scripts/explore_nfl_data.py
 scripts/analyze_nfl.py
 scripts/run_dashboard.py

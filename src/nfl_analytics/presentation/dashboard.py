@@ -6,8 +6,9 @@ import polars as pl
 import streamlit as st
 
 from . import service
-from .components import brand, footer, game_card, heading, hero, signal_card
+from .components import brand, footer, game_card, heading, hero
 from .matchup_view import render_matchup
+from .picks_view import pick_summary
 
 
 @st.cache_data(ttl=900, show_spinner=False)
@@ -130,12 +131,8 @@ def _home(games: pl.DataFrame, season: int, years: list[int], query: str) -> Non
     hero("La NFL en tus datos", "Explora partidos, equipos, estadísticas y análisis utilizando datos históricos y actuales de NFL.",
          "GRIDIRON DATA LAB · NFL ANALYTICS HUB")
     actions = st.columns([1.5, 1.5, 4])
-    if actions[0].button("Explorar partidos", type="primary", width="stretch"):
-        st.session_state["nav"] = "Partidos"
-        st.rerun()
-    if actions[1].button("Ver estadísticas", width="stretch"):
-        st.session_state["nav"] = "Estadísticas"
-        st.rerun()
+    actions[0].button("Explorar partidos", type="primary", width="stretch", on_click=_navigate, args=("Partidos",))
+    actions[1].button("Ver estadísticas", width="stretch", on_click=_navigate, args=("Estadísticas",))
     upcoming = service.upcoming(games)
     if query:
         upcoming = [g for g in upcoming if query.upper() in (g["home_team"] + " " + g["away_team"]).upper()]
@@ -149,19 +146,17 @@ def _home(games: pl.DataFrame, season: int, years: list[int], query: str) -> Non
                     st.rerun()
     else:
         st.info("No hay próximos partidos disponibles en esta temporada o para esta búsqueda.")
-    if st.button("Ver todos los partidos →"):
-        st.session_state["nav"] = "Partidos"
-        st.rerun()
+    st.button("Ver todos los partidos →", on_click=_navigate, args=("Partidos",))
 
-    heading("Análisis y posibles picks", "Señales descriptivas por reglas, no probabilidades ni recomendaciones de apuesta.")
+    heading("Potential Picks / Posibles Picks", "Moneyline · Spread · Game Total · Team Total. Abre un matchup para revisar factores y cobertura.")
     if upcoming:
         try:
             data = analysis_data(season, False)
-            signals = service.featured_signals(data, upcoming)
+            signals = service.featured_picks(data, upcoming)
             cols = st.columns(min(3, len(signals)))
             for index, signal in enumerate(signals):
                 with cols[index % len(cols)]:
-                    signal_card(signal)
+                    pick_summary(signal)
                     if st.button("Ver análisis completo →", key=f"signal_{signal['game_id']}", width="stretch"):
                         st.session_state["selected_game"] = signal["game_id"]
                         st.rerun()
@@ -183,6 +178,11 @@ def _home(games: pl.DataFrame, season: int, years: list[int], query: str) -> Non
 
 def _clear_selection() -> None:
     st.session_state.pop("selected_game", None)
+
+
+def _navigate(section: str) -> None:
+    st.session_state["nav"] = section
+    _clear_selection()
 
 
 def _latest_player_data(years: list[int], season: int) -> tuple[int | None, pl.DataFrame | None]:
