@@ -42,6 +42,19 @@ def test_home_button_navigates_without_mutating_an_active_widget(app):
     assert any(r.label == "Consultar por" for r in app.radio)
 
 
+def test_statistics_button_and_return_home(app):
+    app.run()
+    next(button for button in app.button if button.label == "Ver estadísticas").click().run()
+    assert not app.exception
+    assert app.session_state["nav"] == "Estadísticas"
+    assert any(item.label == "Temporada de jugadores" for item in app.selectbox)
+    next(r for r in app.radio if r.label == "Navegación").set_value("Inicio").run()
+    assert not app.exception
+    next(button for button in app.button if button.label == "Ver estadísticas").click().run()
+    assert not app.exception
+    assert app.session_state["nav"] == "Estadísticas"
+
+
 def test_date_with_no_games(app):
     app.run()
     next(r for r in app.radio if r.label == "Navegación").set_value("Partidos").run()
