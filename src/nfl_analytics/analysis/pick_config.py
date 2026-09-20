@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from math import isfinite
 
-PICK_VERSION = "statistical_leans_v0_1"
+PICK_VERSION = "statistical_leans_v0_2"
 
 
 @dataclass(frozen=True)

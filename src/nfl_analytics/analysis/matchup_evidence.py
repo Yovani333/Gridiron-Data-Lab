@@ -58,7 +58,7 @@ def build_evidence(matchup: dict, schedule: pl.DataFrame, config: PickConfig) ->
         reports = matchup["injuries"].get(profile["team"])
         # Date-only cutoff cannot establish that a same-day report preceded kickoff.
         known = None if reports is None else reports.filter(pl.col("reported_at").dt.date() < cutoff)
-        injuries[profile["team"]] = {"status": "unavailable" if known is None else "dated_reports_only",
+        injuries[profile["team"]] = {"status": matchup.get("injury_quality", {}).get(profile["team"], "unavailable" if known is None else "dated_reports_only"),
                                      "reports": None if known is None else known.height,
                                      "positions": [] if known is None else known["position"].drop_nulls().unique().sort().to_list(),
                                      "scored": False}

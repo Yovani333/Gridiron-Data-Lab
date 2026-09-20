@@ -1,0 +1,718 @@
+{
+  "reports": [
+    {
+      "version": "statistical_leans_v0_2",
+      "season": 2024,
+      "games": 272,
+      "window": 5,
+      "config": {
+        "min_games": 3,
+        "full_sample": 5,
+        "min_split_games": 2,
+        "min_league_games": 16,
+        "min_factors": 3,
+        "min_h2h_games": 3,
+        "h2h_games": 5,
+        "h2h_seasons": 3,
+        "trend_recent_games": 3,
+        "trend_older_games": 2,
+        "min_score": 20.0,
+        "margin_scale": 14.0,
+        "points_scale": 7.0,
+        "win_rate_scale": 0.5,
+        "yards_scale": 2.0,
+        "venue_share": 0.25,
+        "line_buffer": 2.0,
+        "side_weights": [
+          [
+            "margin",
+            1.0
+          ],
+          [
+            "offense",
+            0.5
+          ],
+          [
+            "defense",
+            0.5
+          ],
+          [
+            "record",
+            0.75
+          ],
+          [
+            "venue",
+            0.5
+          ],
+          [
+            "h2h",
+            0.25
+          ],
+          [
+            "last_game",
+            0.25
+          ],
+          [
+            "trend",
+            0.5
+          ],
+          [
+            "efficiency",
+            0.5
+          ]
+        ],
+        "points_weights": [
+          [
+            "offense",
+            1.0
+          ],
+          [
+            "defense",
+            1.0
+          ],
+          [
+            "venue",
+            0.5
+          ],
+          [
+            "h2h",
+            0.25
+          ],
+          [
+            "last_game",
+            0.25
+          ]
+        ]
+      },
+      "summaries": [
+        {
+          "market": "moneyline",
+          "score_bucket": "all",
+          "opportunities": 272,
+          "issued": 153,
+          "abstentions": 119,
+          "favorable": 113,
+          "unfavorable": 40,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.738562091503268
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "0-20",
+          "opportunities": 113,
+          "issued": 0,
+          "abstentions": 113,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "20-40",
+          "opportunities": 53,
+          "issued": 47,
+          "abstentions": 6,
+          "favorable": 35,
+          "unfavorable": 12,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7446808510638298
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "40-60",
+          "opportunities": 53,
+          "issued": 53,
+          "abstentions": 0,
+          "favorable": 38,
+          "unfavorable": 15,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7169811320754716
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "60-80",
+          "opportunities": 39,
+          "issued": 39,
+          "abstentions": 0,
+          "favorable": 28,
+          "unfavorable": 11,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.717948717948718
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "80-100",
+          "opportunities": 14,
+          "issued": 14,
+          "abstentions": 0,
+          "favorable": 12,
+          "unfavorable": 2,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.8571428571428571
+        },
+        {
+          "market": "spread",
+          "score_bucket": "all",
+          "opportunities": 272,
+          "issued": 125,
+          "abstentions": 147,
+          "favorable": 91,
+          "unfavorable": 34,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.728
+        },
+        {
+          "market": "spread",
+          "score_bucket": "0-20",
+          "opportunities": 142,
+          "issued": 0,
+          "abstentions": 142,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "spread",
+          "score_bucket": "20-40",
+          "opportunities": 75,
+          "issued": 70,
+          "abstentions": 5,
+          "favorable": 50,
+          "unfavorable": 20,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7142857142857143
+        },
+        {
+          "market": "spread",
+          "score_bucket": "40-60",
+          "opportunities": 37,
+          "issued": 37,
+          "abstentions": 0,
+          "favorable": 28,
+          "unfavorable": 9,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7567567567567568
+        },
+        {
+          "market": "spread",
+          "score_bucket": "60-80",
+          "opportunities": 16,
+          "issued": 16,
+          "abstentions": 0,
+          "favorable": 11,
+          "unfavorable": 5,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6875
+        },
+        {
+          "market": "spread",
+          "score_bucket": "80-100",
+          "opportunities": 2,
+          "issued": 2,
+          "abstentions": 0,
+          "favorable": 2,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 1.0
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "all",
+          "opportunities": 272,
+          "issued": 92,
+          "abstentions": 180,
+          "favorable": 51,
+          "unfavorable": 41,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.5543478260869565
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "0-20",
+          "opportunities": 177,
+          "issued": 0,
+          "abstentions": 177,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "20-40",
+          "opportunities": 68,
+          "issued": 65,
+          "abstentions": 3,
+          "favorable": 34,
+          "unfavorable": 31,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.5230769230769231
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "40-60",
+          "opportunities": 21,
+          "issued": 21,
+          "abstentions": 0,
+          "favorable": 14,
+          "unfavorable": 7,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6666666666666666
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "60-80",
+          "opportunities": 6,
+          "issued": 6,
+          "abstentions": 0,
+          "favorable": 3,
+          "unfavorable": 3,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.5
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "80-100",
+          "opportunities": 0,
+          "issued": 0,
+          "abstentions": 0,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "all",
+          "opportunities": 544,
+          "issued": 233,
+          "abstentions": 311,
+          "favorable": 164,
+          "unfavorable": 69,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.703862660944206
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "0-20",
+          "opportunities": 270,
+          "issued": 0,
+          "abstentions": 270,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "20-40",
+          "opportunities": 124,
+          "issued": 83,
+          "abstentions": 41,
+          "favorable": 54,
+          "unfavorable": 29,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6506024096385542
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "40-60",
+          "opportunities": 98,
+          "issued": 98,
+          "abstentions": 0,
+          "favorable": 71,
+          "unfavorable": 27,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7244897959183674
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "60-80",
+          "opportunities": 41,
+          "issued": 41,
+          "abstentions": 0,
+          "favorable": 32,
+          "unfavorable": 9,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7804878048780488
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "80-100",
+          "opportunities": 11,
+          "issued": 11,
+          "abstentions": 0,
+          "favorable": 7,
+          "unfavorable": 4,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6363636363636364
+        }
+      ],
+      "fingerprints": {
+        "games": "d7891038da46fca5412427303689c41df800a84ae732d371cc12b117d0aada38",
+        "stats": "521fd16ee1c9be9d3e2ac9b5c87a916f08c9c4ad51e198c76d6f6ee336966861",
+        "history": "e614257809f1e311da6e7cc5d09fb5ca62cea125ac4c01f7bac64356f36038a7"
+      },
+      "limitations": "Retrospective revised data; date-exclusive cutoff. No market odds, ATS, ROI, or calibrated probabilities."
+    },
+    {
+      "version": "statistical_leans_v0_2",
+      "season": 2025,
+      "games": 272,
+      "window": 5,
+      "config": {
+        "min_games": 3,
+        "full_sample": 5,
+        "min_split_games": 2,
+        "min_league_games": 16,
+        "min_factors": 3,
+        "min_h2h_games": 3,
+        "h2h_games": 5,
+        "h2h_seasons": 3,
+        "trend_recent_games": 3,
+        "trend_older_games": 2,
+        "min_score": 20.0,
+        "margin_scale": 14.0,
+        "points_scale": 7.0,
+        "win_rate_scale": 0.5,
+        "yards_scale": 2.0,
+        "venue_share": 0.25,
+        "line_buffer": 2.0,
+        "side_weights": [
+          [
+            "margin",
+            1.0
+          ],
+          [
+            "offense",
+            0.5
+          ],
+          [
+            "defense",
+            0.5
+          ],
+          [
+            "record",
+            0.75
+          ],
+          [
+            "venue",
+            0.5
+          ],
+          [
+            "h2h",
+            0.25
+          ],
+          [
+            "last_game",
+            0.25
+          ],
+          [
+            "trend",
+            0.5
+          ],
+          [
+            "efficiency",
+            0.5
+          ]
+        ],
+        "points_weights": [
+          [
+            "offense",
+            1.0
+          ],
+          [
+            "defense",
+            1.0
+          ],
+          [
+            "venue",
+            0.5
+          ],
+          [
+            "h2h",
+            0.25
+          ],
+          [
+            "last_game",
+            0.25
+          ]
+        ]
+      },
+      "summaries": [
+        {
+          "market": "moneyline",
+          "score_bucket": "all",
+          "opportunities": 272,
+          "issued": 148,
+          "abstentions": 124,
+          "favorable": 101,
+          "unfavorable": 46,
+          "pushes": 1,
+          "favorable_rate_excluding_pushes": 0.6870748299319728
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "0-20",
+          "opportunities": 116,
+          "issued": 0,
+          "abstentions": 116,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "20-40",
+          "opportunities": 56,
+          "issued": 48,
+          "abstentions": 8,
+          "favorable": 25,
+          "unfavorable": 22,
+          "pushes": 1,
+          "favorable_rate_excluding_pushes": 0.5319148936170213
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "40-60",
+          "opportunities": 39,
+          "issued": 39,
+          "abstentions": 0,
+          "favorable": 28,
+          "unfavorable": 11,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.717948717948718
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "60-80",
+          "opportunities": 45,
+          "issued": 45,
+          "abstentions": 0,
+          "favorable": 34,
+          "unfavorable": 11,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7555555555555555
+        },
+        {
+          "market": "moneyline",
+          "score_bucket": "80-100",
+          "opportunities": 16,
+          "issued": 16,
+          "abstentions": 0,
+          "favorable": 14,
+          "unfavorable": 2,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.875
+        },
+        {
+          "market": "spread",
+          "score_bucket": "all",
+          "opportunities": 272,
+          "issued": 125,
+          "abstentions": 147,
+          "favorable": 88,
+          "unfavorable": 37,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.704
+        },
+        {
+          "market": "spread",
+          "score_bucket": "0-20",
+          "opportunities": 143,
+          "issued": 0,
+          "abstentions": 143,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "spread",
+          "score_bucket": "20-40",
+          "opportunities": 69,
+          "issued": 65,
+          "abstentions": 4,
+          "favorable": 40,
+          "unfavorable": 25,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6153846153846154
+        },
+        {
+          "market": "spread",
+          "score_bucket": "40-60",
+          "opportunities": 41,
+          "issued": 41,
+          "abstentions": 0,
+          "favorable": 31,
+          "unfavorable": 10,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7560975609756098
+        },
+        {
+          "market": "spread",
+          "score_bucket": "60-80",
+          "opportunities": 17,
+          "issued": 17,
+          "abstentions": 0,
+          "favorable": 15,
+          "unfavorable": 2,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.8823529411764706
+        },
+        {
+          "market": "spread",
+          "score_bucket": "80-100",
+          "opportunities": 2,
+          "issued": 2,
+          "abstentions": 0,
+          "favorable": 2,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 1.0
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "all",
+          "opportunities": 272,
+          "issued": 92,
+          "abstentions": 180,
+          "favorable": 55,
+          "unfavorable": 37,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.5978260869565217
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "0-20",
+          "opportunities": 174,
+          "issued": 0,
+          "abstentions": 174,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "20-40",
+          "opportunities": 74,
+          "issued": 68,
+          "abstentions": 6,
+          "favorable": 41,
+          "unfavorable": 27,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6029411764705882
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "40-60",
+          "opportunities": 22,
+          "issued": 22,
+          "abstentions": 0,
+          "favorable": 13,
+          "unfavorable": 9,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.5909090909090909
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "60-80",
+          "opportunities": 2,
+          "issued": 2,
+          "abstentions": 0,
+          "favorable": 1,
+          "unfavorable": 1,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.5
+        },
+        {
+          "market": "game_total",
+          "score_bucket": "80-100",
+          "opportunities": 0,
+          "issued": 0,
+          "abstentions": 0,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "all",
+          "opportunities": 544,
+          "issued": 237,
+          "abstentions": 307,
+          "favorable": 155,
+          "unfavorable": 82,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6540084388185654
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "0-20",
+          "opportunities": 259,
+          "issued": 0,
+          "abstentions": 259,
+          "favorable": 0,
+          "unfavorable": 0,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": null
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "20-40",
+          "opportunities": 142,
+          "issued": 94,
+          "abstentions": 48,
+          "favorable": 55,
+          "unfavorable": 39,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.5851063829787234
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "40-60",
+          "opportunities": 90,
+          "issued": 90,
+          "abstentions": 0,
+          "favorable": 62,
+          "unfavorable": 28,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.6888888888888889
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "60-80",
+          "opportunities": 43,
+          "issued": 43,
+          "abstentions": 0,
+          "favorable": 31,
+          "unfavorable": 12,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7209302325581395
+        },
+        {
+          "market": "team_total",
+          "score_bucket": "80-100",
+          "opportunities": 10,
+          "issued": 10,
+          "abstentions": 0,
+          "favorable": 7,
+          "unfavorable": 3,
+          "pushes": 0,
+          "favorable_rate_excluding_pushes": 0.7
+        }
+      ],
+      "fingerprints": {
+        "games": "98a5588734b48a5983f687b550f50367689652d78b2574b15b7a5f71efbb2f01",
+        "stats": "cb6a6a9e59a9dff5ec8803527f32aaa9870d79a2ae71288f5d55935a13eee341",
+        "history": "e614257809f1e311da6e7cc5d09fb5ca62cea125ac4c01f7bac64356f36038a7"
+      },
+      "limitations": "Retrospective revised data; date-exclusive cutoff. No market odds, ATS, ROI, or calibrated probabilities."
+    }
+  ]
+}

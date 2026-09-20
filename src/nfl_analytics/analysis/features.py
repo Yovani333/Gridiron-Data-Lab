@@ -63,6 +63,7 @@ def team_features(data: SeasonData, team: str, *, as_of_date: date | str,
         "success_rate_allowed": advanced["defense"]["success_rate"] if advanced else None,
         "explosive_play_rate": advanced["offense"]["explosive_play_rate"] if advanced else None,
         "box_games": offense["games_with_stats"],
+        "defense_box_games": defense["games_with_stats"],
     }
 
 
@@ -107,7 +108,8 @@ def matchup_features(data: SeasonData, team_a: str, team_b: str, *, as_of_date: 
                        before=cutoff, catalog=meta)
     return {"team_a": a, "team_b": b, "as_of_date": cutoff, "values": row,
             "model_ready": all(row[k] is not None for k in FEATURE_NAMES) and
-                           min(a["games"], b["games"], a["box_games"], b["box_games"]) >= config.min_games,
+                           min(a["games"], b["games"]) >= config.min_games and
+                           all(p["box_games"] == p["defense_box_games"] == p["games"] for p in (a, b)),
             "context": {"divisional": divisional, "same_conference": conf_a[0] == conf_b[0] if conf_a and conf_b else None,
                         "interconference": conf_a[0] != conf_b[0] if conf_a and conf_b else None,
                         "h2h_a_wins": h2h["team_a_wins"], "h2h_b_wins": h2h["team_b_wins"],

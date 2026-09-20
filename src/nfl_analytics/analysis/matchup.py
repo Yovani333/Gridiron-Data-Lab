@@ -10,6 +10,7 @@ from nfl_analytics.data.players import attach_players, injury_reports
 from .form import head_to_head, summarize_games
 from .play_by_play import advanced_summary
 from .team_stats import box_score_summary
+from .contextual import contextual_metrics
 
 
 def _profile(data: SeasonData, team: str, *, before: date, games: int | None, season_type: str, venue: str = "all") -> dict:
@@ -19,6 +20,9 @@ def _profile(data: SeasonData, team: str, *, before: date, games: int | None, se
     form = summarize_games(selected)
     basic["offense"]["points_per_game"] = form["points_per_game"]
     basic["defense"]["points_per_game"] = form["points_allowed_per_game"]
+    for side in ("offense", "defense"):
+        basic[side]["requested_games"] = selected.height
+        basic[side]["coverage"] = basic[side]["games_with_stats"] / selected.height if selected.height else None
     if advanced is not None:
         for side in ("offense", "defense"):
             for metric in ("first_downs", "third_down_rate", "red_zone_td_rate"):
@@ -55,6 +59,7 @@ def compare_teams(data: SeasonData, team_a: str, team_b: str, *, before: date | 
     splits = {team: {venue: _profile(data, team, before=before, games=games, season_type=season_type, venue=venue)
                      for venue in ("home", "away")} for team in (team_a, team_b)}
     injuries = {}
+    injury_quality = {}
     for team in (team_a, team_b):
         reports = None
         if data.injuries.frame is not None and injury_week is not None:
@@ -62,9 +67,12 @@ def compare_teams(data: SeasonData, team_a: str, team_b: str, *, before: date | 
             if data.rosters.frame is not None:
                 reports = attach_players(reports, data.rosters.frame)
         injuries[team] = reports
+        raw = data.injuries.frame
+        injury_quality[team] = ("unavailable" if raw is None else "unverifiable_timestamp"
+                                if "date_modified" not in raw.columns else "dated_reports_only")
     return {"team_a": profiles[team_a], "team_b": profiles[team_b], "home_away": splits,
-            "head_to_head": head_to_head(history if history is not None else data.games, team_a, team_b, h2h_games, before=before, catalog=data.teams.frame),
-            "injuries": injuries, "context": _context(data.teams.frame, team_a, team_b),
+            "head_to_head": head_to_head(history if history is not None else data.games, team_a, team_b, h2h_games, before=before, catalog=data.teams.frame, season_type=season_type),
+            "injuries": injuries, "injury_quality": injury_quality, "context": _context(data.teams.frame, team_a, team_b),
             "before": before, "window": games, "season_type": season_type, "season": data.season,
             "read_at": data.read_at, "injury_week": injury_week,
             "availability": {name: {"status": getattr(data, name).status, "message": getattr(data, name).message}
@@ -78,6 +86,7 @@ def analyze_matchup(data: SeasonData, game_id: str, **options) -> dict:
     game = rows.row(0, named=True)
     comparison = compare_teams(data, game["home_team"], game["away_team"], before=game["date"], injury_week=game["week"], **options)
     comparison["game"] = game
+    comparison["contextual_metrics"] = contextual_metrics(comparison)
     # Schedule flags are game-specific; metadata describes the current alignment.
     if game["divisional"] is True:
         comparison["context"]["relationship"] = "divisional"

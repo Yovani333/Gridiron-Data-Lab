@@ -26,7 +26,7 @@ def injury_reports(frame: pl.DataFrame, team: str, week: int, *, as_of: date | s
     selected = normalize_injuries(frame).filter((pl.col("team") == team) & (pl.col("week") == week))
     if as_of is not None:
         # Undated reports cannot be claimed to have been known at a historical cutoff.
-        selected = selected.filter(pl.col("reported_at").dt.date() <= as_date(as_of))
+        selected = selected.filter(pl.col("reported_at").dt.date() < as_date(as_of))
     return selected.sort(["reported_at", "player"], descending=[True, False], nulls_last=True)
 
 

@@ -71,5 +71,8 @@ def render_picks(report: dict) -> None:
         st.write(report["context_note"])
         st.caption(f"Relación entre equipos: {report['context']['relationship']} · promedio NFL basado en {report['league_games']} partidos previos.")
         for team, injuries in report["injuries"].items():
+            if injuries["status"] == "unverifiable_timestamp":
+                st.caption(f"Lesiones {team}: existen datos de origen, pero sin fecha verificable. Excluidos del contexto histórico y del score.")
+                continue
             st.caption(f"Lesiones {team}: " + ("no disponibles" if injuries["reports"] is None else f"{injuries['reports']} informes fechados antes del corte; posiciones: {', '.join(injuries['positions']) or 'sin información'}") + ". Sin ponderación de impacto.")
         st.caption("Los mercados comparten factores y no son independientes. Ni el score ni la comparación con una línea calculan rentabilidad esperada. El historial puede incluir revisiones posteriores del proveedor.")

@@ -101,13 +101,14 @@ def featured_signals(data: SeasonData, games: list[dict]) -> list[dict]:
     return [analyze_signal(data, game, history=historical) for game in games]
 
 
-def featured_picks(data: SeasonData, games: list[dict]) -> list[dict]:
+def featured_picks(data: SeasonData, games: list[dict], *, window=5, season_type="REG", h2h_games=5) -> list[dict]:
     """Reuse the descriptive pipeline; no probability model or quote downloads."""
     try:
         historical = history()
     except nfl_data.NFLDataError:
         historical = data.games
-    return [analyze_picks(analyze_matchup(data, game["game_id"], history=historical), data.games) for game in games]
+    return [analyze_picks(analyze_matchup(data, game["game_id"], history=historical, games=window,
+                                        season_type=season_type, h2h_games=h2h_games), data.games) for game in games]
 
 
 def matchup(data: SeasonData, game_id: str, *, games: int | None = 5, season_type: str = "REG", h2h_games: int | None = 5) -> dict:
@@ -123,7 +124,7 @@ def matchup(data: SeasonData, game_id: str, *, games: int | None = 5, season_typ
     result["signal"] = analyze_signal(data, game, history=historical)
     result["potential_picks"] = analyze_picks(result, data.games)
     result["model"] = model_projection(data, game["home_team"], game["away_team"],
-                                       as_of_date=game["date"], home_team=game["home_team"])
+                                       as_of_date=game["date"], home_team=None if game["neutral_site"] else game["home_team"])
     return result
 
 
@@ -155,5 +156,17 @@ def model_diagnostics() -> dict:
 
 
 def model_projection(data: SeasonData, team_a: str, team_b: str, *, as_of_date, home_team=None) -> dict:
+    # Keep the previous diagnostic artifact for audit, but do not serve predictions
+    # from a model fitted before neutral-site and common-coverage corrections.
+    return {"status": "requires_revalidation", "model_version": "model_v0_1"}
+
+
+def pick_diagnostics() -> dict | None:
+    path = _ARTIFACT_DIR / "picks_v0_2_diagnostics.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def experimental_model_projection(data: SeasonData, team_a: str, team_b: str, *, as_of_date, home_team=None) -> dict:
+    """Explicit research-only access; not used by the production presentation."""
     model = load_model(_ARTIFACT_DIR / "model_v0_1.json")
     return analyze_probability(data, model, team_a, team_b, as_of_date=as_of_date, home_team=home_team)

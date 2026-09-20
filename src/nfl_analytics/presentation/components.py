@@ -101,7 +101,7 @@ def footer() -> None:
 
 
 def game_card(game: dict) -> bool:
-    statuses = {"result_available": "Resultado publicado", "awaiting_update": "Resultado pendiente", "scheduled": "Programado"}
+    statuses = {"result_available": "Resultado publicado", "awaiting_update": "Resultado pendiente", "scheduled": "Programado", "today_unscored": "Hoy · marcador no publicado"}
     with st.container(border=True, key=f"fixture_{game['game_id']}"):
         st.html(f'<span class="chip">{statuses.get(game["status"], "Estado no disponible")}</span><div class="small-label" style="margin-top:14px">SEMANA {game["week"]} · {escape(game["season_type"])}</div>')
         for side, label in (("away", "Visitante"), ("home", "Local")):
@@ -115,7 +115,11 @@ def game_card(game: dict) -> bool:
 
 
 def metric_table(a: dict, b: dict, team_a: str, team_b: str, *, defense: bool = False, advanced: bool = False) -> None:
-    keys = (["epa_per_play", "passing_epa_per_play", "rushing_epa_per_play", "success_rate", "explosive_play_rate", "total_epa", "passing_epa_total", "rushing_epa_total"]
+    for team, metrics in ((team_a, a), (team_b, b)):
+        if "requested_games" in metrics:
+            covered = metrics.get("games_with_pbp" if advanced else "games_with_stats", 0)
+            st.caption(f"{team}: {covered}/{metrics['requested_games']} partidos con {'PBP' if advanced else 'box score'}. Los puntos/partido proceden del calendario; las otras métricas pueden tener cobertura parcial.")
+    keys = (["epa_per_play", "passing_epa_per_play", "rushing_epa_per_play", "success_rate", "explosive_play_rate", "points_per_drive", "drives_per_game", "total_epa", "passing_epa_total", "rushing_epa_total"]
             if advanced else ["points_per_game", "yards_per_game", "yards_per_play", "total_yards", "passing_yards_per_game", "rushing_yards_per_game", "touchdowns", "turnovers", "completions", "attempts", "sacks", "first_downs", "third_down_rate", "red_zone_td_rate"])
     labels = METRICS | (DEFENSE_LABELS if defense else {})
     rows = [{"Métrica": labels[k], team_a: value(a.get(k), k), team_b: value(b.get(k), k)} for k in keys]
@@ -131,6 +135,7 @@ def form_cards(a: dict, b: dict) -> None:
             st.html(team_badge(profile["team"]))
             st.metric("Récord · V–D–E", record(form))
             st.caption(f"{form['games']} partidos · victorias: {value(form['win_pct'], 'win_pct')}")
+            st.caption(f"Porcentaje de clasificación (empate = ½): {value(form.get('standings_pct'), 'win_pct')}")
             left, right = st.columns(2)
             left.metric("Puntos / partido", value(form["points_per_game"]))
             right.metric("Permitidos / partido", value(form["points_allowed_per_game"]))

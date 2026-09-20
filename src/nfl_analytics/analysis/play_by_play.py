@@ -4,6 +4,7 @@ import polars as pl
 
 from nfl_analytics.data.games import require_columns
 from .team_stats import complete_sum, ratio
+from .possessions import drive_summary
 
 
 def _mean(frame: pl.DataFrame, column: str) -> float | None:
@@ -62,13 +63,18 @@ def advanced_summary(pbp: pl.DataFrame | None, selected_games: pl.DataFrame, tea
     """Defense values are opponent EPA/success ALLOWED, without sign inversion."""
     if pbp is None:
         return None
-    required = {"game_id", "posteam", "defteam", "play_type", "qb_kneel", "qb_spike", "two_point_attempt", "qb_dropback", "epa", "yards_gained"}
+    required = {"game_id", "play_id", "posteam", "defteam", "play_type", "qb_kneel", "qb_spike", "two_point_attempt", "qb_dropback", "epa", "yards_gained"}
     require_columns(pbp, required)
     eligible = pbp.join(selected_games.select("game_id"), on="game_id", how="semi")
+    if eligible.select(pl.struct("game_id", "play_id").n_unique()).item() != eligible.height or eligible["play_id"].null_count():
+        raise ValueError("PBP requires unique non-null game_id/play_id")
     result = {}
     for side, column in (("offense", "posteam"), ("defense", "defteam")):
         all_plays = eligible.filter(pl.col(column) == team)
         result[side] = _side(_scrimmage(all_plays))
+        result[side].update(drive_summary(all_plays))
+        result[side]["requested_games"] = selected_games.height
+        result[side]["coverage"] = result[side]["games_with_pbp"] / selected_games.height if selected_games.height else None
         # Provider conversion flags include accepted-penalty first downs. Not only scrimmage plays.
         if {"third_down_converted", "third_down_failed"} <= set(all_plays.columns):
             thirds = all_plays.filter((pl.col("third_down_converted") == 1) | (pl.col("third_down_failed") == 1))

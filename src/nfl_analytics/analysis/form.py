@@ -10,7 +10,7 @@ def summarize_games(games: pl.DataFrame) -> dict:
     """Win percentage = wins / games; ties are reported separately."""
     n = games.height
     if not n:
-        return {"games": 0, "wins": 0, "losses": 0, "ties": 0, "win_pct": None,
+        return {"games": 0, "wins": 0, "losses": 0, "ties": 0, "win_pct": None, "standings_pct": None,
                 "points_for": None, "points_against": None, "points_per_game": None,
                 "points_allowed_per_game": None, "point_diff": None, "avg_margin": None}
     pf = games.get_column("points_for").sum()
@@ -18,7 +18,8 @@ def summarize_games(games: pl.DataFrame) -> dict:
     wins = games.filter(pl.col("point_diff") > 0).height
     losses = games.filter(pl.col("point_diff") < 0).height
     return {"games": n, "wins": wins, "losses": losses, "ties": n - wins - losses,
-            "win_pct": wins / n, "points_for": pf, "points_against": pa,
+            "win_pct": wins / n, "standings_pct": (wins + .5 * (n - wins - losses)) / n,
+            "points_for": pf, "points_against": pa,
             "points_per_game": pf / n, "points_allowed_per_game": pa / n,
             "point_diff": pf - pa, "avg_margin": (pf - pa) / n}
 
@@ -27,7 +28,7 @@ def recent_form(schedule: pl.DataFrame, team: str, games: int | None = 5, **filt
     return summarize_games(recent_games(schedule, team, games, **filters))
 
 
-def head_to_head(schedule: pl.DataFrame, team_a: str, team_b: str, games: int | None = 5, *, before=None, catalog: pl.DataFrame | None = None) -> dict:
+def head_to_head(schedule: pl.DataFrame, team_a: str, team_b: str, games: int | None = 5, *, before=None, catalog: pl.DataFrame | None = None, season_type: str = "all") -> dict:
     positive_count(games)
     team_a, team_b = validate_team(team_a, schedule), validate_team(team_b, schedule)
     aliases_a, aliases_b = franchise_aliases(team_a, catalog), franchise_aliases(team_b, catalog)
@@ -40,6 +41,12 @@ def head_to_head(schedule: pl.DataFrame, team_a: str, team_b: str, games: int | 
                               (pl.col("status") == "result_available"))
     if before is not None:
         history = history.filter(pl.col("date") < as_date(before))
+    if season_type == "REG":
+        history = history.filter(pl.col("season_type") == "REG")
+    elif season_type == "POST":
+        history = history.filter(pl.col("season_type").is_in(["POST", "WC", "DIV", "CON", "SB"]))
+    elif season_type != "all":
+        raise ValueError("Invalid season type")
     history = history.with_columns(
         pl.when(home_a).then(pl.col("home_score")).otherwise(pl.col("away_score")).alias("points_for"),
         pl.when(home_a).then(pl.col("away_score")).otherwise(pl.col("home_score")).alias("points_against"),

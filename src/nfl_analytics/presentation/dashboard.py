@@ -88,7 +88,7 @@ def main() -> None:
             footer()
             return
         if section == "Inicio":
-            _home(games, season, years, query)
+            _home(games, season, years, query, window=window, season_type=season_type, h2h_games=h2h_count)
             footer()
             return
         if section in ("Jugadores", "Estadísticas"):
@@ -135,7 +135,7 @@ def main() -> None:
             st.code(str(exc))
 
 
-def _home(games: pl.DataFrame, season: int, years: list[int], query: str) -> None:
+def _home(games: pl.DataFrame, season: int, years: list[int], query: str, *, window=5, season_type="REG", h2h_games=5) -> None:
     hero("La NFL en tus datos", "Explora partidos, equipos, estadísticas y análisis utilizando datos históricos y actuales de NFL.",
          "GRIDIRON DATA LAB · NFL ANALYTICS HUB")
     actions = st.columns([1.5, 1.5, 4])
@@ -160,7 +160,7 @@ def _home(games: pl.DataFrame, season: int, years: list[int], query: str) -> Non
     if upcoming:
         try:
             data = analysis_data(season, False)
-            signals = service.featured_picks(data, upcoming)
+            signals = service.featured_picks(data, upcoming, window=window, season_type=season_type, h2h_games=h2h_games)
             cols = st.columns(min(3, len(signals)))
             for index, signal in enumerate(signals):
                 with cols[index % len(cols)]:
@@ -248,7 +248,7 @@ def _statistics(games: pl.DataFrame, season: int, years: list[int], query: str, 
         name = "player_display_name" if "player_display_name" in players.columns else "player_name"
         players = players.filter(pl.col(name).str.to_lowercase().str.contains(query.lower(), literal=True).fill_null(False) |
                                  pl.col("team").str.contains(query.upper(), literal=True).fill_null(False))
-    _stats_panels(games, players, selected)
+    _stats_panels(calendar(selected), players, selected)
 
 
 def _analysis_page(games: pl.DataFrame, season: int, include_pbp: bool) -> None:
@@ -282,6 +282,17 @@ def _comparison(schedule, season, window, season_type, h2h_count, include_pbp):
 
 
 def _diagnostics():
+    picks = service.pick_diagnostics()
+    heading("Validación de Potential Picks v0.2", "Scoring heurístico independiente del modelo logístico. Sin líneas: no es evaluación ATS ni rentabilidad.")
+    if picks:
+        for report in picks["reports"]:
+            st.caption(f"Temporada {report['season']} · {report['games']} partidos REG · ventana {report['window']} · {report['version']}")
+            st.dataframe(report["summaries"], hide_index=True)
+            with st.expander(f"Trazabilidad {report['season']}"):
+                st.json(report["fingerprints"])
+    else:
+        st.info("Evaluación heurística todavía no publicada.")
+    st.warning("Diagnóstico logístico histórico v0.1: pendiente de repetir con las correcciones de sede neutral y cobertura; no valida el scoring v0.2.")
     report = service.model_diagnostics()
     hero("Una hipótesis medible.", "Evaluación cronológica y límites de model_v0_1.", "LAB · VALIDACIÓN")
     if report["accuracy"] <= report["benchmarks"]["better_record"]:

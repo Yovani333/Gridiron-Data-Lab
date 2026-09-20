@@ -36,7 +36,7 @@ def test_scores_ties_pending(games):
 
 def test_form_and_cutoff(games):
     form = recent_form(games, "buf", 3, before="2024-09-22")
-    assert form == {"games": 3, "wins": 1, "losses": 1, "ties": 1, "win_pct": 1 / 3,
+    assert form == {"games": 3, "wins": 1, "losses": 1, "ties": 1, "win_pct": 1 / 3, "standings_pct": .5,
                     "points_for": 68, "points_against": 65, "points_per_game": 68 / 3,
                     "points_allowed_per_game": 65 / 3, "point_diff": 3, "avg_margin": 1.0}
     assert recent_games(games, "BUF", 1, before="2024-09-22")["game_id"].to_list() == ["c"]

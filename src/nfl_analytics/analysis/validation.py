@@ -19,7 +19,7 @@ def examples_from_season(data: SeasonData, config: ModelConfig = ModelConfig()) 
         if game["home_score"] == game["away_score"]:
             continue
         features = matchup_features(data, game["home_team"], game["away_team"],
-                                    as_of_date=game["date"], home_team=game["home_team"], config=config)
+                                    as_of_date=game["date"], home_team=None if game["neutral_site"] else game["home_team"], config=config)
         if not features["model_ready"]:
             continue
         a, b = features["team_a"], features["team_b"]
@@ -75,7 +75,7 @@ def walk_forward(examples: list[Example], config: ModelConfig = ModelConfig(),
         model = fit_model(training, config, features)
         for game in games:
             p = model.probability(game.features)
-            predictions.append({"game_id": game.game_id, "date": day.isoformat(),
+            predictions.append({"game_id": game.game_id, "date": game.date.isoformat(),
                                 "probability": p, "home_win": game.home_win,
                                 "trained_through": model.trained_through.isoformat(),
                                 "home_record_pick": (game.home_record or 0) >= (game.away_record or 0),

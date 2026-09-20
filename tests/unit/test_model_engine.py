@@ -74,7 +74,8 @@ def test_fit_normalization_probability_and_cutoff(bundle):
 def test_engine_produces_complementary_probabilities_from_pregame_data(bundle):
     examples, config = _examples()
     model = fit_model(examples[:8], config)
-    result = analyze_probability(bundle, model, "BUF", "MIA", as_of_date="2024-09-29", home_team="BUF")
+    assert analyze_probability(bundle, model, "BUF", "MIA", as_of_date="2024-09-29", home_team="BUF")["status"] == "insufficient_data"
+    result = analyze_probability(bundle, model, "BUF", "MIA", as_of_date="2024-09-22", home_team="BUF")
     assert result["status"] == "retrospective_estimate"
     assert result["team_a_probability"] + result["team_b_probability"] == pytest.approx(1)
     assert result["features"]["home_field"] == 1

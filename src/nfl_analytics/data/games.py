@@ -34,13 +34,13 @@ def normalize_games(frame: pl.DataFrame, *, today: date | None = None) -> pl.Dat
     require_columns(frame, {"game_id", "season", "week", "game_type", "gameday", "home_team", "away_team", "home_score", "away_score"})
     today = today or date.today()
     optional = {"gametime": pl.String, "location": pl.String, "div_game": pl.Int32,
-                "stadium": pl.String}
+                "stadium": pl.String, "home_rest": pl.Int32, "away_rest": pl.Int32}
     frame = frame.with_columns([pl.lit(None, dtype=t).alias(c) for c, t in optional.items() if c not in frame.columns])
     result = frame.select(
         "game_id", pl.col("season").cast(pl.Int32), pl.col("week").cast(pl.Int32),
         pl.col("game_type").alias("season_type"),
         pl.col("gameday").cast(pl.String).str.to_date(strict=True).alias("date"),
-        "gametime", "stadium", "home_team", "away_team",
+        "gametime", "stadium", "home_team", "away_team", "home_rest", "away_rest",
         pl.col("home_score").cast(pl.Int32), pl.col("away_score").cast(pl.Int32),
         (pl.col("location").str.to_lowercase() == "neutral").fill_null(False).alias("neutral_site"),
         pl.col("div_game").cast(pl.Boolean).alias("divisional"),
@@ -53,7 +53,8 @@ def normalize_games(frame: pl.DataFrame, *, today: date | None = None) -> pl.Dat
     margin = pl.col("home_score") - pl.col("away_score")
     return result.with_columns(
         pl.when(scored).then(pl.lit("result_available"))
-        .when(pl.col("date") <= today).then(pl.lit("awaiting_update"))
+        .when(pl.col("date") == today).then(pl.lit("today_unscored"))
+        .when(pl.col("date") < today).then(pl.lit("awaiting_update"))
         .otherwise(pl.lit("scheduled")).alias("status"),
         pl.when(scored & (margin > 0)).then(pl.col("home_team"))
         .when(scored & (margin < 0)).then(pl.col("away_team")).otherwise(None).alias("winner"),

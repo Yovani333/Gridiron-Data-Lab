@@ -28,6 +28,12 @@ def render_matchup(result: dict) -> None:
     st.caption("Las divisiones del catálogo describen la alineación actual; no se reconstruyen cambios históricos de conferencia.")
     if result.get("history_warning"):
         st.warning(result["history_warning"])
+    if result.get("contextual_metrics"):
+        with st.expander("Descanso y contraste ataque–defensa"):
+            context_metrics = result["contextual_metrics"]
+            st.write({"Días de descanso": context_metrics["rest_days"]})
+            st.dataframe(context_metrics["efficiency"], hide_index=True)
+            st.caption("Diferencia = producción ofensiva propia menos producción permitida por el rival; no predice puntos ni suma al Pick Score. Solo se calcula con cobertura de partidos completa. Puntos/drive cuenta TD de 6 y FG de 3; excluye conversiones.")
     if "potential_picks" in result:
         render_picks(result["potential_picks"])
     elif "signal" in result:
@@ -60,6 +66,8 @@ def render_matchup(result: dict) -> None:
             st.caption("Las contribuciones son asociaciones del modelo, no efectos causales. Lesiones, H2H y EPA no se incluyen en esta versión.")
     elif model["status"] == "training_overlap":
         st.info("No hay una evaluación histórica independiente para esta fecha: el modelo se entrenó con partidos posteriores. Consulta las métricas descriptivas.")
+    elif model["status"] == "requires_revalidation":
+        st.info("Modelo v0.1 pendiente de reevaluación tras corregir sedes neutrales y cobertura. Se conserva su diagnóstico histórico; no se muestran probabilidades obsoletas.")
     else:
         st.info("Datos insuficientes para estimar este partido con la versión actual. Se requieren partidos y box scores previos para ambos equipos.")
     tabs = st.tabs(["Resumen", "Forma reciente", "Ofensiva", "Defensiva", "Local / visitante", "Historial", "Lesiones", "Avanzadas"])
@@ -110,11 +118,14 @@ def render_matchup(result: dict) -> None:
         st.caption(f"Temporadas consultadas: {history['scope_seasons']}. Historial descriptivo; no estima un ganador.")
         st.caption(f"Abreviaturas relacionadas por ID de franquicia: {history['aliases']}")
     with tabs[6]:
-        st.caption(f"Semana {result['injury_week'] or 'no seleccionada'} · Solo informes con fecha registrada hasta {result['before']}. No son un archivo completo de lo conocido antes del kickoff.")
+        st.caption(f"Semana {result['injury_week'] or 'no seleccionada'} · Solo informes fechados antes del día {result['before']}. Los reportes sin fecha no permiten reconstruir disponibilidad prepartido.")
         for col, team in zip(st.columns(2), (ta, tb)):
             with col:
                 st.subheader(team)
                 reports = result["injuries"][team]
+                if result.get("injury_quality", {}).get(team) == "unverifiable_timestamp":
+                    st.info("La fuente publica lesiones sin fecha verificable. No se muestran como información conocida antes de este partido.")
+                    continue
                 if reports is None:
                     st.info("Datos de lesiones no disponibles o semana sin seleccionar.")
                 elif reports.is_empty():
