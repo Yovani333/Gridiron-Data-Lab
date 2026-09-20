@@ -439,3 +439,7 @@ su benchmark de mejor récord. No se integran odds, parlays ni servicios externo
 ### Identidad visual
 Los logos y colores se obtienen de load_teams mediante nuestra capa nfl_data; las fotos provienen del campo headshot_url de estadísticas de jugadores. El navegador carga esas imágenes desde las URLs publicadas por nflverse (pueden alojarse en CDN de NFL/ESPN; no se consulta una API deportiva adicional). Los metadatos visuales se reutilizan durante 24 horas y su ausencia no bloquea el análisis. Se conservan abreviaturas/nombres cuando falta una imagen. Los colores del catálogo corresponden a la identidad actual, no a una reconstrucción histórica.
 
+# Registro prospectivo
+
+Para conservar señales antes de los partidos y evaluarlas posteriormente sin
+recalcularlas, consulta [registro prospectivo](docs/prospective-tracking.md).

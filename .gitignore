@@ -219,3 +219,6 @@ __marimo__/
 
 # Local uv bootstrap and nflreadpy persistent datasets (never commit data)
 .cache/
+
+# Prospective evidence and dated evaluations; back up independently.
+records/

@@ -1,0 +1,229 @@
+{
+  "note": "Initial prospective capture; full input snapshots stored locally in records/prospective. All abstentions are retained. Hashes commit to the original payloads.",
+  "games": [
+    {
+      "sha256": "c34a4f736e5bd58db292a20557ad6a658d5426576202b0855a77e4a827f34128",
+      "captured_at": "2026-09-20T14:57:07.437284+00:00",
+      "game_id": "2026_03_KC_MIA",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:MIA": "insufficient_data",
+        "team_total:KC": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "90b56ae2a659c9fb6ad101446b50ccecd07d8851120d531a8b50711cdf7a5a7c",
+      "captured_at": "2026-09-20T14:57:08.247595+00:00",
+      "game_id": "2026_03_MIN_TB",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:TB": "insufficient_data",
+        "team_total:MIN": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "6435d12ff258de1d99a4510ef2738714294473d8164cbd9cc2a3b5908946e812",
+      "captured_at": "2026-09-20T14:57:08.015119+00:00",
+      "game_id": "2026_03_TEN_NYG",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:NYG": "insufficient_data",
+        "team_total:TEN": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "1d80a9ecee485db813cfda59e3723f21cbc89a675831c7eddb78157e19058f9d",
+      "captured_at": "2026-09-20T14:57:08.590855+00:00",
+      "game_id": "2026_03_LA_DEN",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:DEN": "insufficient_data",
+        "team_total:LA": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "c795e2c3f1d993228bd30bba42cf9849dca9cee77ae4b37aa1d6d57cb702650c",
+      "captured_at": "2026-09-20T14:57:08.477821+00:00",
+      "game_id": "2026_03_LV_NO",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:NO": "insufficient_data",
+        "team_total:LV": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "09e4439cafafaf7c138bba2f6fdc4cca16f26d421380ebff9b7c804571e81f67",
+      "captured_at": "2026-09-20T14:57:07.899288+00:00",
+      "game_id": "2026_03_SEA_WAS",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:WAS": "insufficient_data",
+        "team_total:SEA": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "6c3ac451b86357356da672554a0175a94646491f35b804d81a05a0f63c3ae648",
+      "captured_at": "2026-09-20T14:57:07.046413+00:00",
+      "game_id": "2026_03_CAR_CLE",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:CLE": "insufficient_data",
+        "team_total:CAR": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "d3dbdf6350501e155e9a79adfc945f5d03ddaff4a39598c2e47e9924e22e1e4b",
+      "captured_at": "2026-09-20T14:57:07.666043+00:00",
+      "game_id": "2026_03_NE_JAX",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:JAX": "insufficient_data",
+        "team_total:NE": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "91bfd7acc6a3426b3fe08be6054651cd4e65591f120ad710998f20282d3654d1",
+      "captured_at": "2026-09-20T14:57:07.191408+00:00",
+      "game_id": "2026_03_CIN_PIT",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:PIT": "insufficient_data",
+        "team_total:CIN": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "dc1089e644c0ea823c8cbc7e502cc1c8e77e24eae006ff46078aabb0743ca17f",
+      "captured_at": "2026-09-20T14:57:06.913787+00:00",
+      "game_id": "2026_03_ATL_GB",
+      "scheduled_date": "2026-09-24",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:GB": "insufficient_data",
+        "team_total:ATL": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "2f646cd957d5421731607794aed589d9ec1e509420f839ea9e28fcfbae906b16",
+      "captured_at": "2026-09-20T14:57:07.323691+00:00",
+      "game_id": "2026_03_HOU_IND",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:IND": "insufficient_data",
+        "team_total:HOU": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "2e77e27427ed800d568a260410d689c0becbe988f29b54c434ee16473cddd746",
+      "captured_at": "2026-09-20T14:57:08.127472+00:00",
+      "game_id": "2026_03_ARI_SF",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:SF": "insufficient_data",
+        "team_total:ARI": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "cdfb2ed169e3705025bef3c10d2ab5248ca54dca83c11c3e4a0107c70f73817a",
+      "captured_at": "2026-09-20T14:57:06.795068+00:00",
+      "game_id": "2026_02_NYG_LA",
+      "scheduled_date": "2026-09-21",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:LA": "insufficient_data",
+        "team_total:NYG": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "50fbe540864111f3c26908286c0ee33e3ac885e83ea3ec53963d20fd97a1f60b",
+      "captured_at": "2026-09-20T14:57:08.362454+00:00",
+      "game_id": "2026_03_BAL_DAL",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:DAL": "insufficient_data",
+        "team_total:BAL": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "5cb19799701a41dd06c1ecedde57b7f06e789d8f6493225ae83b83beab93b970",
+      "captured_at": "2026-09-20T14:57:07.782505+00:00",
+      "game_id": "2026_03_NYJ_DET",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:DET": "insufficient_data",
+        "team_total:NYJ": "insufficient_data"
+      }
+    },
+    {
+      "sha256": "62c3639dc8e99d21f699e9a449dfa6a7668a98d1f221bf3b2521195f039ce12e",
+      "captured_at": "2026-09-20T14:57:07.552355+00:00",
+      "game_id": "2026_03_LAC_BUF",
+      "scheduled_date": "2026-09-27",
+      "version": "statistical_leans_v0_2",
+      "statuses": {
+        "moneyline": "insufficient_data",
+        "spread": "insufficient_data",
+        "game_total": "insufficient_data",
+        "team_total:BUF": "insufficient_data",
+        "team_total:LAC": "insufficient_data"
+      }
+    }
+  ]
+}
