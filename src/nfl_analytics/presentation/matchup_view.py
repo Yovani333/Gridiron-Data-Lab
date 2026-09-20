@@ -6,6 +6,7 @@ import streamlit as st
 from .components import form_cards, games_table, heading, hero, metric_table, signal_card
 from .formatting import value
 from .picks_view import render_picks
+from .identity import team_badge
 
 
 def render_matchup(result: dict) -> None:
@@ -15,6 +16,9 @@ def render_matchup(result: dict) -> None:
     names = [context[key].get("name") or context[key]["abbreviation"] for key in ("team_a", "team_b")]
     window = f"últimos {result['window']} partidos" if result["window"] else "temporada completa"
     hero(f"{names[0]}  /  {names[1]}", f"{result['season']} · {window} · {result['season_type']} · partidos anteriores al {result['before']}", "MATCHUP LAB · DATOS, CONTEXTO Y CONTRASTES")
+    for column, team in zip(st.columns(2), (ta, tb)):
+        with column:
+            st.html(team_badge(team))
     relation = {"divisional": "Enfrentamiento divisional", "same_conference": "Misma conferencia", "interconference": "Interconferencia",
                 "unknown": "Conferencia no disponible", "historical_alignment_unavailable": "Alineación histórica no disponible"}
     st.caption(relation[context["relationship"]] + " · " + " / ".join(context[k].get("division") or "División no disponible" for k in ("team_a", "team_b")))

@@ -28,6 +28,8 @@ def season_leaders(frame: pl.DataFrame, category: str, *, limit: int = 10) -> pl
         return pl.DataFrame()
     aggregations = [pl.col(name).drop_nulls().last().alias("player"),
                     pl.col("team").drop_nulls().last().alias("team")]
+    if "headshot_url" in frame.columns:
+        aggregations.append(pl.col("headshot_url").drop_nulls().last())
     for metric in metrics:
         if metric in frame.columns:
             # null-only player metrics are not converted into a fabricated zero.
@@ -36,4 +38,5 @@ def season_leaders(frame: pl.DataFrame, category: str, *, limit: int = 10) -> pl
     return (selected.group_by("player_id").agg(aggregations)
             .filter(pl.col(metrics[0]).is_not_null() & (pl.col(metrics[0]) > 0))
             .sort(metrics[0], descending=True).head(limit)
-            .select("player", "team", *[m for m in metrics if m in frame.columns]))
+            .select("player", "team", *(["headshot_url"] if "headshot_url" in frame.columns else []),
+                    *[m for m in metrics if m in frame.columns]))

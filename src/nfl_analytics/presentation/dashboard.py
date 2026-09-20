@@ -9,6 +9,13 @@ from . import service
 from .components import brand, footer, game_card, heading, hero
 from .matchup_view import render_matchup
 from .picks_view import pick_summary
+from .identity import avatar, image_url, team_identity
+from html import escape
+
+
+@st.cache_data(ttl=86400, show_spinner=False)
+def visual_identities():
+    return service.team_identities()
 
 
 @st.cache_data(ttl=900, show_spinner=False)
@@ -35,6 +42,7 @@ def main() -> None:
     st.set_page_config(page_title="Gridiron · NFL Analytics", page_icon="🏈", layout="wide", initial_sidebar_state="collapsed")
     brand()
     service.initialize()
+    st.session_state["team_identities"] = visual_identities()
     nav_col, search_col = st.columns([5, 2], vertical_alignment="center")
     with nav_col:
         section = st.radio("Navegación", ["Inicio", "Partidos", "Equipos", "Jugadores", "Análisis", "Estadísticas", "Datos"],
@@ -203,7 +211,16 @@ def _stats_panels(games: pl.DataFrame, players: pl.DataFrame | None, stats_year:
         if board.is_empty():
             st.info("Estadísticas de jugadores aún no disponibles.")
         else:
-            st.dataframe(board.rename({"player": "Jugador", "team": "Equipo"}), hide_index=True, width="stretch")
+            for row in board.head(3).to_dicts():
+                identity = team_identity(row["team"])
+                photo = row.get("headshot_url")
+                st.html(f'<div class="player-spotlight" style="--team-accent:{identity["color"]}">'
+                        f'{avatar(photo, row["player"], player=True)}<div><strong>{escape(row["player"])}</strong>'
+                        f'<small>{escape(row["team"])} · {escape(category)}</small></div></div>')
+            if "headshot_url" in board.columns:
+                board = board.with_columns(pl.col("headshot_url").map_elements(image_url, return_dtype=pl.String))
+            st.dataframe(board.rename({"player": "Jugador", "team": "Equipo"}), hide_index=True, width="stretch",
+                         column_config={"headshot_url": st.column_config.ImageColumn("Foto", width="small")})
     with right:
         if not board.is_empty():
             key = {"Passing": "passing_yards", "Rushing": "rushing_yards", "Receiving": "receiving_yards", "Defense": "def_tackles_solo"}[category]

@@ -26,6 +26,14 @@ def seasons() -> list[int]:
     return nfl_data.get_schedule_seasons()
 
 
+def team_identities() -> dict:
+    """Optional visual metadata, never required for statistical calculations."""
+    try:
+        return {row["team_abbr"]: row for row in nfl_data.load_teams().to_dicts()}
+    except (nfl_data.NFLDataError, ValueError):
+        return {}
+
+
 def calendar(season: int) -> pl.DataFrame:
     return nfl_data.get_games(season)
 

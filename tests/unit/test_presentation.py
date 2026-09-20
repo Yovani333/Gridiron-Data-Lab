@@ -13,6 +13,7 @@ from nfl_analytics.data.datasets import Dataset
 @pytest.fixture
 def app(monkeypatch, bundle):
     monkeypatch.setattr(service, "initialize", lambda: None)
+    monkeypatch.setattr(dashboard, "visual_identities", lambda: {})
     monkeypatch.setattr(dashboard, "available_seasons", lambda: [2024])
     monkeypatch.setattr(dashboard, "calendar", lambda season: bundle.games)
     monkeypatch.setattr(dashboard, "analysis_data", lambda season, include_pbp: bundle)

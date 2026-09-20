@@ -188,6 +188,7 @@ def test_matchup_ui_renders_real_report_structure(monkeypatch, pick_data):
     from streamlit.testing.v1 import AppTest
     from nfl_analytics.presentation import dashboard, service
     monkeypatch.setattr(service, "initialize", lambda: None)
+    monkeypatch.setattr(dashboard, "visual_identities", lambda: {})
     monkeypatch.setattr(service, "history", lambda: pick_data.games)
     monkeypatch.setattr(dashboard, "available_seasons", lambda: [2024])
     monkeypatch.setattr(dashboard, "calendar", lambda season: pick_data.games)

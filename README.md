@@ -430,3 +430,7 @@ Se podrá validar o descartar la regla descriptiva con evaluación cronológica,
 estudiar fuerza del rival y ajustar las métricas por calendario. El motor
 probabilístico experimental existente se mantiene separado y aún no supera
 su benchmark de mejor récord. No se integran odds, parlays ni servicios externos.
+
+### Identidad visual
+Los logos y colores se obtienen de load_teams mediante nuestra capa nfl_data; las fotos provienen del campo headshot_url de estadísticas de jugadores. El navegador carga esas imágenes desde las URLs publicadas por nflverse (pueden alojarse en CDN de NFL/ESPN; no se consulta una API deportiva adicional). Los metadatos visuales se reutilizan durante 24 horas y su ausencia no bloquea el análisis. Se conservan abreviaturas/nombres cuando falta una imagen. Los colores del catálogo corresponden a la identidad actual, no a una reconstrucción histórica.
+
