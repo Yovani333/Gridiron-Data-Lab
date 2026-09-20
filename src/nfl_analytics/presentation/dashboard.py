@@ -288,6 +288,13 @@ def _diagnostics():
         for report in picks["reports"]:
             st.caption(f"Temporada {report['season']} · {report['games']} partidos REG · ventana {report['window']} · {report['version']}")
             st.dataframe(report["summaries"], hide_index=True)
+            if report.get("benchmarks"):
+                st.markdown("#### Scoring frente a reglas simples · mismos candidatos")
+                st.caption("Récord y margen usan la misma ventana reciente; empates entre equipos eligen al local. Spread sin línea solo compara ganador; totales comparan contra la referencia NFL previa.")
+                st.dataframe([r for r in report["benchmarks"] if r["score_bucket"] == "all"], hide_index=True)
+                with st.expander(f"Rangos y comparaciones pareadas · {report['season']}"):
+                    st.dataframe([r for r in report["benchmarks"] if r["score_bucket"] != "all"], hide_index=True)
+                st.caption("Los intervalos Wilson 95% son descriptivos: no ajustan dependencia entre equipos/mercados. Menos de 30 resultados se marca como muestra pequeña; 30 no garantiza validez. No hay calibración ni prueba de rentabilidad.")
             with st.expander(f"Trazabilidad {report['season']}"):
                 st.json(report["fingerprints"])
     else:

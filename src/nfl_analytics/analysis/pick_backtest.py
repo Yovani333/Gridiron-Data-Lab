@@ -9,6 +9,7 @@ from .matchup import analyze_matchup
 from .pick_config import PickConfig, PICK_VERSION
 from .pick_engine import analyze_picks
 from .pick_validation import settle_report
+from .pick_benchmarks import benchmark_directions, settle_benchmarks, benchmark_report, wilson_interval
 
 
 def fingerprint(frame: pl.DataFrame | None) -> str | None:
@@ -33,12 +34,15 @@ def evaluate_picks(data, *, history=None, window=5, config=PickConfig()) -> dict
         report = analyze_picks(matchup, data.games, config=config)
         outcomes = {row["id"]: row for row in settle_report(report, game)}
         for candidate in report["candidates"]:
+            directions = benchmark_directions(matchup, candidate["market"])
             decisions.append({"game_id": game["game_id"], "date": game["date"].isoformat(),
                               "market": candidate["market"], "candidate": candidate["id"],
                               "status": candidate["status"], "score": candidate["score"],
                               "outcome": outcomes.get(candidate["id"], {}).get("outcome"),
                               "baseline": candidate["baseline"], "selection": candidate["selection"],
-                              "input_game_ids": report["input_game_ids"]})
+                              "input_game_ids": report["input_game_ids"],
+                              "benchmark_directions": directions,
+                              "benchmark_outcomes": settle_benchmarks(directions, game, candidate)})
     summaries = []
     for market in ("moneyline", "spread", "game_total", "team_total"):
         subset = [r for r in decisions if r["market"] == market]
@@ -48,12 +52,17 @@ def evaluate_picks(data, *, history=None, window=5, config=PickConfig()) -> dict
             losses = sum(r["outcome"] == "unfavorable" for r in selected)
             pushes = sum(r["outcome"] == "push" for r in selected)
             abstentions = sum(r["outcome"] is None for r in selected)
+            lo, hi = wilson_interval(wins, wins + losses)
             summaries.append({"market": market, "score_bucket": "all" if high == 101 and low == 0 else f"{low}-{min(high,100)}",
                               "opportunities": len(selected), "issued": wins + losses + pushes,
                               "abstentions": abstentions, "favorable": wins, "unfavorable": losses, "pushes": pushes,
-                              "favorable_rate_excluding_pushes": wins / (wins + losses) if wins + losses else None})
+                              "favorable_rate_excluding_pushes": wins / (wins + losses) if wins + losses else None,
+                              "wilson95_low": lo, "wilson95_high": hi,
+                              "resolved_sample": wins + losses,
+                              "small_sample": wins + losses < 30})
     return {"version": PICK_VERSION, "season": data.season, "games": rows.height,
             "window": window, "config": asdict(config), "summaries": summaries, "decisions": decisions,
+            "evaluation_version": "paired_benchmarks_v1", "benchmarks": benchmark_report(decisions),
             "fingerprints": {"games": fingerprint(data.games), "stats": fingerprint(data.stats.frame),
                              "history": fingerprint(historical)},
             "limitations": "Retrospective revised data; date-exclusive cutoff. No market odds, ATS, ROI, or calibrated probabilities."}

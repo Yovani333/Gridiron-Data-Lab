@@ -1,6 +1,7 @@
 # Gridiron-Data-Lab
 
 Actualización: [fiabilidad y evaluación heurística v0.2](docs/reliability-v02.md).
+Evaluación adicional: [benchmarks sobre la misma muestra y rangos del score](docs/pick-benchmarks.md).
 La sección Datos separa el backtest de Potential Picks del modelo logístico histórico.
 Las probabilidades de ese modelo están suspendidas hasta reevaluarlo con las correcciones.
 Python-based football analytics platform for collecting, validating and analyzing NFL game, team and historical data using nflreadpy.

@@ -162,6 +162,9 @@ def model_projection(data: SeasonData, team_a: str, team_b: str, *, as_of_date, 
 
 
 def pick_diagnostics() -> dict | None:
+    paired = _ARTIFACT_DIR / "picks_v0_2_benchmarks.json"
+    if paired.exists():
+        return json.loads(paired.read_text(encoding="utf-8"))
     path = _ARTIFACT_DIR / "picks_v0_2_diagnostics.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 

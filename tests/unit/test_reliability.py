@@ -70,7 +70,7 @@ def test_backtest_accounts_for_abstentions_and_no_future_inputs(bundle, tmp_path
         assert row["issued"] == row["favorable"] + row["unfavorable"] + row["pushes"]
     altered = replace(bundle, games=bundle.games.with_columns(pl.when(pl.col("game_id") == "f").then(999).otherwise(pl.col("home_score")).alias("home_score")))
     replay = evaluate_picks(altered)
-    assert [{k:v for k,v in r.items() if k != "outcome"} for r in report["decisions"]] == [{k:v for k,v in r.items() if k != "outcome"} for r in replay["decisions"]]
+    assert [{k:v for k,v in r.items() if k not in ("outcome", "benchmark_outcomes")} for r in report["decisions"]] == [{k:v for k,v in r.items() if k not in ("outcome", "benchmark_outcomes")} for r in replay["decisions"]]
     path = tmp_path / "report.json"
     save_report(report, path)
     with pytest.raises(FileExistsError):

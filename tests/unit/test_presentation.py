@@ -78,6 +78,8 @@ def test_model_diagnostics_are_separate_from_game_view(app):
     assert not app.exception
     assert any("benchmark" in item.value.lower() for item in app.warning)
     assert any("Brier" == item.label for item in app.metric)
+    assert any("Scoring frente a reglas simples" in item.value for item in app.markdown)
+    assert any("intervalos Wilson" in item.value for item in app.caption)
 
 
 def test_source_failure(app, monkeypatch):
